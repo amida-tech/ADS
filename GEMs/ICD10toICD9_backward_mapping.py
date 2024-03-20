@@ -2,10 +2,10 @@
 import pandas as pd
 
 ##Variables
-Condition = "gi cancer" #Update condition
-ICD10List = pd.read_excel('G:/My Drive/mcp/VROv2/gems/gi-icd10.xlsx') #Update to your file location
-ICD10CodeColumn = 'ICD10 Code' #Update to column name of where the ICD-10 Codes are
-ICD10Name = 'Code Description' #Update to column name of where the ICD-10 names are
+Condition = "TEST gi cancer" #Update condition
+ICD10List = pd.read_excel('XXXXXX.xlsx') #Update to your file location
+ICD10CodeColumn = 'XXXXXX' #Update to column name of where the ICD-10 Codes are
+ICD10Name = 'XXXXXXX' #Update to column name of where the ICD-10 names are
 
 #Do not change these variables
 GEMS = pd.read_csv('../GEMS/2018_I10gem.csv', dtype=str)
@@ -69,4 +69,4 @@ ICD9codes['Requires Combination'] = ICD9codes['Flag'].apply(flag3)
 FinalICD9 = ICD9codes.filter(['ICD10', 'ICD10 Name', 'ICD9', 'ICD9 Name', 'Match', 'Corresponding Code', 'Requires Combination'])
 
 ## Save file
-FinalICD9.to_excel('../GEMS/output' + Condition + 'icd9-codes.xlsx')
+FinalICD9.to_excel('GEMs/output/' + Condition + '_icd9_codes.xlsx')
