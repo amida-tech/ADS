@@ -8,8 +8,8 @@ ICD10CodeColumn = 'ICD10 Code' #Update to column name of where the ICD-10 Codes 
 ICD10Name = 'Code Description' #Update to column name of where the ICD-10 names are
 
 #Do not change these variables
-GEMS = pd.read_csv('GEMs/2018_I10gem.csv', dtype=str)
-ICD9desc = pd.read_excel('GEMs/ICD9_CMS32_DESC_LONG_SHORT_DX.xlsx')
+GEMS = pd.read_csv('../GEMS/2018_I10gem.csv', dtype=str)
+ICD9desc = pd.read_excel('../GEMS/ICD9_CMS32_DESC_LONG_SHORT_DX.xlsx')
 
 ## Format ICD10 file for use
 ICD10List = ICD10List.rename({ICD10CodeColumn: 'ICD10'}, axis=1)
@@ -69,5 +69,4 @@ ICD9codes['Requires Combination'] = ICD9codes['Flag'].apply(flag3)
 FinalICD9 = ICD9codes.filter(['ICD10', 'ICD10 Name', 'ICD9', 'ICD9 Name', 'Match', 'Corresponding Code', 'Requires Combination'])
 
 ## Save file
-filename = f'{Condition}' + '_icd9codes.xlsx'
-FinalICD9.to_excel(filename)
+FinalICD9.to_excel('../GEMS/output' + Condition + 'icd9-codes.xlsx')
