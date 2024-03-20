@@ -136,8 +136,19 @@ if __name__ == "__main__":
             formatted_ndc_list.append('-'.join(parts))
         else:
             formatted_ndc_list.append(ndc)
+            
+    formatted_ndc_list_2 = []
     
-    df['NDC'] = formatted_ndc_list
+    for ndc in formatted_ndc_list:
+        parts = ndc.split('-')
+        labeler_code = parts[0]
+        if len(labeler_code) == 4:
+            parts[0] = labeler_code.zfill(5)  # Add leading zero
+            formatted_ndc_list_2.append('-'.join(parts))
+        else:
+            formatted_ndc_list_2.append(ndc)
+    
+    df['NDC'] = formatted_ndc_list_2
 
     # Create the "output" folder if it doesn't exist
     folder_name = "output"
