@@ -28,10 +28,11 @@ For cases where there is no match, no corresponding code, or requires a combinat
 
 Note. There may be duplicate ICD-9 codes in the file. Please remove any duplicates for final code set file. 
 
-## Inuts
+## Inputs
 - `2018_I10gems.csv` : 2018 General Equivalnce Mappings from [CMS](https://www.cms.gov/medicare/coding-billing/icd-10-codes/2018-icd-10-cm-gem)
 - `ICD9_CMS32_DESC_LONG_SHORT_DX.xlsx` : ICD-9 Full and Abbreviated Code Titles from [CMS](https://www.cms.gov/medicare/coding-billing/icd-10-codes/icd-9-cm-diagnosis-procedure-codes-abbreviated-and-full-code-titles)
 - `ICD10toICD9_backward_mapping.py` : Mapping file to go from ICD-10 codes to find equivalent ICD-9 codes
+- ICD-10 code list with names/descriptions
 
 ## Outputs
 - Excel file containing the following columns: 
