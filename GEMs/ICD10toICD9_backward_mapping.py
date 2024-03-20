@@ -70,6 +70,6 @@ ICD9codes['Requires Combination'] = ICD9codes['Flag'].apply(flag3)
 FinalICD9 = ICD9codes.filter(['ICD10', 'ICD10 Name', 'ICD9', 'ICD9 Name', 'Match', 'Corresponding Code', 'Requires Combination'])
 
 ## Save file
-outpath = 'GEMs/output'
+outpath = 'output/'
 file_name = f"{Condition}_icd9_codes.xlsx"
 FinalICD9.to_excel(outpath + file_name)

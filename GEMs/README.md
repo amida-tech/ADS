@@ -11,7 +11,7 @@ Steps:
     - Update `ICD10List` to your ICD-10 file location
     - Update `ICD10CodeColumn` to the column name of where your ICD-10 codes are in your ICD-10 sheet 
     - Update `ICD10Name` to the column name of where your ICD-10 descriptions/names are in your ICD-10 sheet  
-4. Run Script
+4. Run script with in the GEMs folder
 
 ## Understanding Results
 Not all ICD-10 codes will have ICD-9 codes.  
