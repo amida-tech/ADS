@@ -3,13 +3,14 @@ import pandas as pd
 
 ##Variables
 Condition = "TEST gi cancer" #Update condition
-ICD10List = pd.read_excel('XXXXXX.xlsx') #Update to your file location
-ICD10CodeColumn = 'XXXXXX' #Update to column name of where the ICD-10 Codes are
-ICD10Name = 'XXXXXXX' #Update to column name of where the ICD-10 names are
+ICD10File = 'TEST_gi-icd10' #Update to your file name. Make sure this file is added to the "input" folder
+ICD10CodeColumn = 'ICD10 Code' #Update to column name of where the ICD-10 Codes are
+ICD10Name = 'Code Description' #Update to column name of where the ICD-10 names are
 
 #Do not change these variables
-GEMS = pd.read_csv('../GEMS/2018_I10gem.csv', dtype=str)
-ICD9desc = pd.read_excel('../GEMS/ICD9_CMS32_DESC_LONG_SHORT_DX.xlsx')
+GEMS = pd.read_csv('2018_I10gem.csv', dtype=str)
+ICD9desc = pd.read_excel('ICD9_CMS32_DESC_LONG_SHORT_DX.xlsx')
+ICD10List = pd.read_excel('input/' + ICD10File + '.xlsx')
 
 ## Format ICD10 file for use
 ICD10List = ICD10List.rename({ICD10CodeColumn: 'ICD10'}, axis=1)
@@ -69,4 +70,6 @@ ICD9codes['Requires Combination'] = ICD9codes['Flag'].apply(flag3)
 FinalICD9 = ICD9codes.filter(['ICD10', 'ICD10 Name', 'ICD9', 'ICD9 Name', 'Match', 'Corresponding Code', 'Requires Combination'])
 
 ## Save file
-FinalICD9.to_excel('GEMs/output/' + Condition + '_icd9_codes.xlsx')
+outpath = 'GEMs/output'
+file_name = f"{Condition}_icd9_codes.xlsx"
+FinalICD9.to_excel(outpath + file_name)

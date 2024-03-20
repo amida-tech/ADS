@@ -3,13 +3,15 @@
 ## GEMs Backward Mapping
 This script uses General Equivalnce Mappings (GEMs) to do backward mappings from ICD-10 codes to ICD-9 codes. 
 
-You will need to create an excel file with only ICD-10 codes and corresponding names/descriptions for running this script. 
-
-To use, update the following variables in the `ICD10toICD9_backward_mapping.py` script:
+Steps: 
+1. Create an excel file with only ICD-10 codes and corresponding names/descriptions for running this script. 
+2. Add your ICD-10 code file into the "Input" folder.
+3. Update the following variables in the `ICD10toICD9_backward_mapping.py` script:
 - Update `Condition` to the diagnosis code sets you are using
 - Update `ICD10List` to your ICD-10 file location
 - Update `ICD10CodeColumn` to the column name of where your ICD-10 codes are in your ICD-10 sheet 
 - Update `ICD10Name` to the column name of where your ICD-10 descriptions/names are in your ICD-10 sheet  
+4. Run Script
 
 ## Understanding Results
 Not all ICD-10 codes will have ICD-9 codes.  
