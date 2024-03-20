@@ -4,8 +4,30 @@
 
 ## CHANGE INPUTS HERE ##
 apikey = 'YOUR API KEY HERE'
-string_list = ["Asthma"]
-Excel_Sheet_Name = "Asthma SNOMED-CT Sheet"
+
+#Output Excel Sheet Name
+Excel_Sheet_Name = "EXCEL SHEET NAME HERE"
+
+#Input Excel Sheet with Keywords Name
+excel_file_keywords = 'GI Cancer SNOMED Keywords.xlsx'
+
+# Keyword Column Name
+column_name = 'Keywords'
+
+# Read the Excel file
+excel_file_path = excel_file_keywords
+df = pd.read_excel(excel_file_path)
+
+# Extract the column as a Pandas Series
+column_series = df[column_name]
+
+# Convert the Pandas Series to a list and exclude the column name as the first element
+column_list = column_series.tolist()
+
+string_list = column_list
+
+# Now column_list contains the column data with the column name as the first element
+print(string_list)
 
 
 ## DO NOT CHANGE BELOW THIS LINE ##
@@ -13,6 +35,7 @@ import requests
 import argparse
 import numpy as np
 import pandas as pd
+import os
 version = 'current'
 
 
@@ -152,9 +175,21 @@ for x in np.arange(0,len(SNOMEDCT_code),1):
 SNOMED_decend = pd.DataFrame({"Data Concept": "Diagnosis Code", "Data Sub-Concept": "N/A", "Coding Standard": decend_root, "Code Value": decend_values, "Code Description": decend_names})
 SNOMED_trans_decend = pd.concat([SNOMED_decend, snomed_trans_df.loc[:]]).drop_duplicates().reset_index(drop=True)
 
+# Folder name
+folder_name = "output"
 
-excel_name = f'{Excel_Sheet_Name}' + ".xlsx"
+# Create the "output" folder if it doesn't exist
+if not os.path.exists(folder_name):
+    os.makedirs(folder_name)
+    print(f"Folder '{folder_name}' created successfully.")
 
+# Define the excel file name with its path
+excel_name = os.path.join(folder_name, f'{Excel_Sheet_Name}.xlsx')
+
+# Write DataFrame to an Excel file in the output folder
 SNOMED_trans_decend.to_excel(excel_name)
+
+# Print a message indicating where the file is saved
+print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the '{folder_name}' folder.")
 
 

@@ -3,6 +3,7 @@
 
 import requests 
 import pandas as pd
+import os
 
 apikey = 'YOUR API KEY HERE'
 
@@ -123,8 +124,20 @@ if __name__ == "__main__":
     # Example list of keywords
     df = main(string_list)
 
+    # Create the "output" folder if it doesn't exist
+    folder_name = "output"
+    if not os.path.exists(folder_name):
+        os.makedirs(folder_name)
+        print(f"Folder '{folder_name}' created successfully.")
+
+    # Define the excel file name with its path
+    excel_file_path = os.path.join(folder_name, f'{Excel_Sheet_Name}.xlsx')
+
     # Write DataFrame to an Excel file
-    with pd.ExcelWriter(f'{Excel_Sheet_Name}.xlsx') as writer:
+    with pd.ExcelWriter(excel_file_path) as writer:
         df.to_excel(writer, sheet_name="Sheet1", index=False)
+
+    # Print a message indicating where the file is saved
+    print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the '{folder_name}' folder.")
 
 

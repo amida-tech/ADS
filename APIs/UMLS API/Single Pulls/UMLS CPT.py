@@ -3,8 +3,31 @@
 
 ## CHANGE INPUTS HERE ##
 apikey = 'YOUR API KEY HERE'
-string_list = ["Spirometry"]
-Excel_Sheet_Name = "Asthma CPT Sheet"
+
+#Output Excel Sheet Name
+Excel_Sheet_Name = "EXCEL SHEET NAME HERE"
+
+#Input Excel Sheet with Keywords Name
+excel_file_keywords = 'GI Cancer CPT Keywords.xlsx'
+
+# Keyword Column Name
+column_name = 'Keywords'
+
+
+# Read the Excel file
+excel_file_path = excel_file_keywords
+df = pd.read_excel(excel_file_path)
+
+# Extract the column as a Pandas Series
+column_series = df[column_name]
+
+# Convert the Pandas Series to a list and exclude the column name as the first element
+column_list = column_series.tolist()
+
+string_list = column_list
+
+# Now column_list contains the column data with the column name as the first element
+print(string_list)
 
 
 ## DO NOT CHANGE BELOW THIS LINE ##
@@ -12,6 +35,7 @@ import requests
 import argparse
 import numpy as np
 import pandas as pd
+import os
 version = 'current'
 
 # Keep in mind this pulls the CUI code for UMLS
@@ -148,7 +172,20 @@ for x in np.arange(0,len(CPT_code),1):
 CPT_decend = pd.DataFrame({"Data Concept": "Procedure Code", "Data Sub-Concept": "N/A", "Coding Standard": decend_CPT_root, "Code Value": decend_CPT_values, "Code Description": decend_CPT_names})
 CPT_trans_decend = pd.concat([CPT_decend, CPT_trans_df.loc[:]]).drop_duplicates().reset_index(drop=True)
 
-excel_name = f'{Excel_Sheet_Name}' + ".xlsx"
+# Folder name
+folder_name = "output"
 
+# Create the "output" folder if it doesn't exist
+if not os.path.exists(folder_name):
+    os.makedirs(folder_name)
+    print(f"Folder '{folder_name}' created successfully.")
+
+# Define the excel file name with its path
+excel_name = os.path.join(folder_name, f'{Excel_Sheet_Name}.xlsx')
+
+# Write DataFrame to an Excel file in the output folder
 CPT_trans_decend.to_excel(excel_name)
+
+# Print a message indicating where the file is saved
+print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the '{folder_name}' folder.")
 

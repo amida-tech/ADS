@@ -1,31 +1,41 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-
 ## CHANGE INPUTS HERE ##
 apikey = 'YOUR API KEY HERE'
-string_list = ["Prednisone Intensol", "Adrenalin", "Ventolin HFA", "Xopenex", "Accolate", "Advair Diskus", "Advair", "Aerospan HFA",
-               "Alvesco", "Asmanex Twisthaler", "Breo Ellipta", "Cinqair", "Dulera", "Dupixent", "Fasenra", "Flovent HFA", 
-               "Flovent", "Nucala", "Pulmicort Flexhaler", "QVAR RediHaler", "Serevent Diskus", "Serevent", "Singulair", "Spiriva Respimat", 
-               "Symbicort", "Trelegy Ellipta", "Xolair", "Zyflo", "Rayos", "Auvi-Q", "Proventil HFA", "Proventil", "Xopenex HFA", "Xopenex", "Advair HFA", 
-               "Asmanex HFA", "Asmanex", "Flovent Diskus", "Pulmicort Respules", "Zyflo CR", "Medrol", "Epipen 2-Pak", "Epipen", "Proair HFA", "Proair",
-               "Xopenex Concentrate", "Millipred", "EpiPen Jr 2-Pak", "ProAir RespiClick", "Orapred", "Symjepi", "ODT", 
-               "AirDuo RespiClick", "AirDuo", "Pediapred", "Wixela Inhub", "ArmonAi RespiClick", "ArmonAi", "Arnuit Ellipta", "Prednisone", "Epinephrine", "Albuterol", "Levalbuterol", "Zafirlukast", "Fluticasone", "Flunisolide", "Ciclesonide", 
-               "Reslizumab", "Mometasone", "Dupilumab", "Benralizumab", "Fluticasone", "Mepolizumab", "Budesonide", "Beclomethasone", 
-               "Montelukast", "Tiotropium", "Budesonide", "Fluticasone Furoate", "Omalizumab", "Zileuton", "methylprednisolone", 
-               "prednisolone", "Salmeterol", "Formoterol", "Umeclidinium", "Vilanterol"]
-Excel_Sheet_Name = "Asthma RxNorm Sheet"
+
+#Output Excel Sheet Name
+Excel_Sheet_Name = "EXCEL SHEET NAME HERE"
+
+#Input Excel Sheet with Keywords Name
+excel_file_keywords = 'GI Cancer Med Keywords.xlsx'
+
+# Keyword Column Name
+column_name = 'Keywords'
 
 
+# Read the Excel file
+excel_file_path = excel_file_keywords
+df = pd.read_excel(excel_file_path)
+
+# Extract the column as a Pandas Series
+column_series = df[column_name]
+
+# Convert the Pandas Series to a list and exclude the column name as the first element
+column_list = column_series.tolist()
+
+string_list = column_list
+
+# Now column_list contains the column data with the column name as the first element
+print(string_list)
 
 ## DO NOT CHANGE CODE BELOW THIS LINE ## 
 import requests 
 import argparse
 import numpy as np
 import pandas as pd
+import os
 version = 'current'
-
-
 
 # Collect Data Pulled 
 ui_code_RxNorm = []
@@ -54,8 +64,7 @@ for x in np.arange(0, len(string_list), 1):
         continue
 
 RxNorm_pd = pd.DataFrame({"Data Concept": "RxNorm Code", "Data Sub-Concept": "N/A", "Coding Standard": rootSource_RxNorm, "Code Value": ui_code_RxNorm, "Code Description": name_RxNorm}).drop_duplicates().reset_index(drop=True)
-RxNorm_pd
-
+# RxNorm_pd
 
 # Converts the SNOMED-CT CUI Codes from the chunk above into SNOMEDCT_US Codes
 base_uri = 'https://uts-ws.nlm.nih.gov'
@@ -100,15 +109,22 @@ for cui in cui_list:
                 
 RXNORM_trans_df = pd.DataFrame({"Data Concept": "RxNorm Code", "Data Sub-Concept": "N/A", "Coding Standard": RXNORM_root, "Code Value": RXNORM_code, "Code Description": RXNORM_name})
 
+# Folder name
+folder_name = "output"
 
+# Create the "output" folder if it doesn't exist
+if not os.path.exists(folder_name):
+    os.makedirs(folder_name)
+    print(f"Folder '{folder_name}' created successfully.")
 
-# RXNORM_trans_df
+# Define the excel file name with its path
+excel_name = os.path.join(folder_name, f'{Excel_Sheet_Name}.xlsx')
 
-
-excel_name = f'{Excel_Sheet_Name}' + ".xlsx"
-
+# Write DataFrame to an Excel file in the output folder
 RXNORM_trans_df.to_excel(excel_name)
 
+# Print a message indicating where the file is saved
+print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the '{folder_name}' folder.")
 
 
 
