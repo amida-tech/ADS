@@ -124,6 +124,21 @@ if __name__ == "__main__":
     # Example list of keywords
     df = main(string_list)
 
+    ndc_list = df['NDC']
+
+    formatted_ndc_list = []
+
+    for ndc in ndc_list:
+        parts = ndc.split('-')
+        product_code = parts[1]
+        if len(product_code) == 3:
+            parts[1] = product_code.zfill(4)  # Add leading zero
+            formatted_ndc_list.append('-'.join(parts))
+        else:
+            formatted_ndc_list.append(ndc)
+    
+    df['NDC'] = formatted_ndc_list
+
     # Create the "output" folder if it doesn't exist
     folder_name = "output"
     if not os.path.exists(folder_name):
