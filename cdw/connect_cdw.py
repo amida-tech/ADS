@@ -1,5 +1,5 @@
 """
-Script that connects to the relevant CDW databases for pulling codesets
+Script to connect to the relevant CDW tables for pulling specific codesets
 """
 # import dependencies
 import os
