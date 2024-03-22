@@ -1,6 +1,8 @@
 # openFDA Folder
 Before using this script, you must have an APIKey with openFDA.  [Go here to get an openFDA apiKey](https://open.fda.gov/apis/authentication/)
 
+Script output can be found in the "output" folder, located in the API folder. 
+
 ## openFDA API NDC Code Pull-No API Key
 This Python code retrieves drug information from the openFDA API based on provided keywords, processes the data, and writes it to an Excel file.
 

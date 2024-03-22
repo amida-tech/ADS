@@ -3,6 +3,8 @@ Make sure you have an account active with [UMLS](https://uts.nlm.nih.gov/uts/uml
 
 Many of these scripts are very thorough and will frequently return more codes than required. Some codes returned may not be directly relevant to the diagnosis. It is recommended that the analyst reviews the data returned for accuracy concerning their specific diagnosis.
 
+All scripts output can be found in the "output" folder, located in the API folder. 
+
 ## File Descriptions
 - UMLS SNOMED, ICD10, CPT, and LOINC Decendant and Children Pull
     - Returns the SNOMEDCT_US, ICD10, CPT, and LOINC codes associated with an inputted list of strings

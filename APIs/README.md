@@ -10,3 +10,7 @@
     - Contains code that gathers SNOMED-CT, ICD10, CPT, LOINC and RxNorm codes (collective or individually)
     - Advantages: gathers all codes commonly required to gather for a eCFR diagnosis codeset.
     - Disadvantages: Requires account with UMLS and access to a UMLS apikey (apikey comes with the account)
+
+- output 
+    - Contains output from code run in the openFDA and UMLS API folders
+    - If not created manually, the folder will appear after running any script in the openFDA API or UMLS API folders (and their subsetted folders)
