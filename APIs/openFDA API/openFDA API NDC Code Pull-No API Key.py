@@ -147,23 +147,39 @@ if __name__ == "__main__":
             formatted_ndc_list_2.append('-'.join(parts))
         else:
             formatted_ndc_list_2.append(ndc)
-    
-    df['NDC'] = formatted_ndc_list_2
 
-    # Create the "output" folder if it doesn't exist
-    folder_name = "output"
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
-        print(f"Folder '{folder_name}' created successfully.")
+    formatted_ndc_list_3 = []
+
+    for ndc in formatted_ndc_list_2:
+        parts = ndc.split('-')
+        package_code = parts[2]
+        if len(package_code) == 1:
+            parts[2] = package_code.zfill(2)  # Add leading zero
+            formatted_ndc_list_3.append('-'.join(parts))
+        else:
+            formatted_ndc_list_3.append(ndc)
+    
+    df['NDC'] = formatted_ndc_list_3
+
+    # Find the parent folder "GitHub Saved Progress"
+    parent_folder_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
+
+    # Define the output folder path
+    output_folder_path = os.path.join(parent_folder_path, "output")
+
+    # Check if the output folder exists, if not, create it
+    if not os.path.exists(output_folder_path):
+        os.makedirs(output_folder_path)
+        print(f"Folder 'output' created successfully.")
 
     # Define the excel file name with its path
-    excel_file_path = os.path.join(folder_name, f'{Excel_Sheet_Name}.xlsx')
+    excel_file_path = os.path.join(output_folder_path, f'{Excel_Sheet_Name}.xlsx')
 
     # Write DataFrame to an Excel file
     with pd.ExcelWriter(excel_file_path) as writer:
         df.to_excel(writer, sheet_name="Sheet1", index=False)
 
     # Print a message indicating where the file is saved
-    print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the '{folder_name}' folder.")
+    print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the 'output' folder.")
 
 

@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import requests 
+import argparse
+import numpy as np
+import pandas as pd
+import os
+version = 'current'
+
 ## CHANGE INPUTS HERE ##
 apikey = 'YOUR API KEY HERE'
 
@@ -13,6 +20,7 @@ excel_file_keywords = 'GI Cancer CPT Keywords.xlsx'
 # Keyword Column Name
 column_name = 'Keywords'
 
+## DO NOT CHANGE BELOW THIS LINE ##
 
 # Read the Excel file
 excel_file_path = excel_file_keywords
@@ -28,15 +36,6 @@ string_list = column_list
 
 # Now column_list contains the column data with the column name as the first element
 print(string_list)
-
-
-## DO NOT CHANGE BELOW THIS LINE ##
-import requests 
-import argparse
-import numpy as np
-import pandas as pd
-import os
-version = 'current'
 
 # Keep in mind this pulls the CUI code for UMLS
 # You will need to convert these CUI codes from UMLS codes into their associated SNOMEDCT, ICD10, LNC, CPT, etc codes
@@ -172,20 +171,23 @@ for x in np.arange(0,len(CPT_code),1):
 CPT_decend = pd.DataFrame({"Data Concept": "Procedure Code", "Data Sub-Concept": "N/A", "Coding Standard": decend_CPT_root, "Code Value": decend_CPT_values, "Code Description": decend_CPT_names})
 CPT_trans_decend = pd.concat([CPT_decend, CPT_trans_df.loc[:]]).drop_duplicates().reset_index(drop=True)
 
-# Folder name
-folder_name = "output"
+# Find the parent folder "GitHub Saved Progress"
+parent_folder_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir, os.pardir))
 
-# Create the "output" folder if it doesn't exist
-if not os.path.exists(folder_name):
-    os.makedirs(folder_name)
-    print(f"Folder '{folder_name}' created successfully.")
+# Define the output folder path
+output_folder_path = os.path.join(parent_folder_path, "output")
 
-# Define the excel file name with its path
-excel_name = os.path.join(folder_name, f'{Excel_Sheet_Name}.xlsx')
+# Check if the output folder exists, if not, create it
+if not os.path.exists(output_folder_path):
+    os.makedirs(output_folder_path)
+    print(f"output folder created successfully.")
 
-# Write DataFrame to an Excel file in the output folder
-CPT_trans_decend.to_excel(excel_name)
+# Define the path for the output Excel file
+excel_path = os.path.join(output_folder_path, f'{Excel_Sheet_Name}.xlsx')
+
+# Write DataFrame to the Excel file
+CPT_trans_decend.to_excel(excel_path, index=False)
 
 # Print a message indicating where the file is saved
-print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the '{folder_name}' folder.")
+print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the output folder.")
 

@@ -1,11 +1,37 @@
 #!/usr/bin/env python
 # coding: utf-8
-
+import requests 
+import argparse
+import numpy as np
+import pandas as pd
+version = 'current'
 
 ## CHANGE INPUTS HERE ##
 apikey = 'YOUR API KEY HERE'
-string_list = ["Asthma", "with Asthma"]
-Excel_Sheet_Name = "Asthma Sheet"
+
+#Output Excel Sheet Name
+Excel_Sheet_Name = "EXCEL SHEET NAME HERE"
+
+#Input Excel Sheet with Keywords Name
+excel_file_keywords = 'GI Cancer SNOMED Keywords.xlsx'
+
+# Keyword Column Name
+column_name = 'Keywords'
+
+# Read the Excel file
+excel_file_path = excel_file_keywords
+df = pd.read_excel(excel_file_path)
+
+# Extract the column as a Pandas Series
+column_series = df[column_name]
+
+# Convert the Pandas Series to a list and exclude the column name as the first element
+column_list = column_series.tolist()
+
+string_list = column_list
+
+# Now column_list contains the column data with the column name as the first element
+print(string_list)
 
 
 # Code Structure Outline 
@@ -23,11 +49,6 @@ Excel_Sheet_Name = "Asthma Sheet"
 
 
 ## DO NOT CHANGE BELOW THIS LINE ##
-import requests 
-import argparse
-import numpy as np
-import pandas as pd
-version = 'current'
 
 names = []
 
@@ -434,8 +455,24 @@ CPT_LOINC_trans_decend = pd.concat([loinc_trans_df, CPT_trans_df.loc[:]]).drop_d
 SNOMEDCT_ICD10_CPT_LOINC_trans_df = pd.concat([CPT_LOINC_trans_decend, SNOMEDCT_ICD10_trans_decend.loc[:]]).drop_duplicates().reset_index(drop=True)
 
 
-excel_name = f'{Excel_Sheet_Name}' + ".xlsx"
+# Find the parent folder "GitHub Saved Progress"
+parent_folder_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
 
-SNOMEDCT_ICD10_CPT_LOINC_trans_df.to_excel(excel_name)
+# Define the output folder path
+output_folder_path = os.path.join(parent_folder_path, "output")
+
+# Check if the output folder exists, if not, create it
+if not os.path.exists(output_folder_path):
+    os.makedirs(output_folder_path)
+    print(f"output folder created successfully.")
+
+# Define the path for the output Excel file
+excel_path = os.path.join(output_folder_path, f'{Excel_Sheet_Name}.xlsx')
+
+# Write DataFrame to the Excel file
+SNOMEDCT_ICD10_CPT_LOINC_trans_df.to_excel(excel_path, index=False)
+
+# Print a message indicating where the file is saved
+print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the output folder.")
 
 
