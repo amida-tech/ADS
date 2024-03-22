@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# coding: utf-8
+# Imports
 import requests 
 import argparse
 import numpy as np
@@ -19,7 +18,7 @@ excel_file_keywords = 'GI Cancer SNOMED Keywords.xlsx'
 # Keyword Column Name
 column_name = 'Keywords'
 
-## DO NOT CHANGE BELOW THIS LINE ##
+## End of Requested Inputs ##
 
 # Read the Excel file
 excel_file_path = excel_file_keywords

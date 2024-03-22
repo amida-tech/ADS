@@ -4,6 +4,7 @@ import requests
 import argparse
 import numpy as np
 import pandas as pd
+import os
 version = 'current'
 
 ## CHANGE INPUTS HERE ##
@@ -17,6 +18,8 @@ excel_file_keywords = 'GI Cancer SNOMED Keywords.xlsx'
 
 # Keyword Column Name
 column_name = 'Keywords'
+
+## End of Requested Inputs ##
 
 # Read the Excel file
 excel_file_path = excel_file_keywords

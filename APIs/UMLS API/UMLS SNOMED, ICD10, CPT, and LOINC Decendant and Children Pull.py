@@ -1,13 +1,10 @@
-#!/usr/bin/env python
-# coding: utf-8
+# Imports
 import requests 
 import argparse
 import numpy as np
 import pandas as pd
 import os
-
 version = 'current'
-
 
 ## CHANGE INPUTS HERE ##
 apikey = 'YOUR API KEY HERE'
@@ -20,6 +17,8 @@ excel_file_keywords = 'GI Cancer SNOMED Keywords.xlsx'
 
 # Keyword Column Name
 column_name = 'Keywords'
+
+## End of Requested Inputs ##
 
 # Read the Excel file
 excel_file_path = excel_file_keywords
@@ -36,7 +35,6 @@ string_list = column_list
 # Now column_list contains the column data with the column name as the first element
 print(string_list)
 
-## DO NOT CHANGE BELOW THIS LINE ##
 names = []
 
 for x in np.arange(0, len(string_list),1):
