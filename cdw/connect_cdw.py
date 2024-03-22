@@ -28,7 +28,14 @@ output_file = "test_cpt"
 
 # parse input files
 def read_inputs(filename, code):
+    """
+    Summary: Parses and concatenate input values depending on codeset type
+    Args: filename(str): filename located in input folder
+          code(str): type of code set (icd, cpt, keyword)
+    Returns: string: code set values
+    """
     with open(f'./cdw/input/{filename}.txt', "r") as file:
+
         if code == 'icd':
             test = "".join(f"{line.rstrip()[:3]}," for line in file)
             test = set(test.split(","))
@@ -48,6 +55,11 @@ codes = f"'{read_inputs(cpt_input, 'cpt')}'"
 
 # SQL query parameters
 def param_query(codes):
+    """
+    Summary: SQL query statements used to retrieve data from CDW
+    Args: codes (str): list of code sets from the input files
+    Returns: (str) a sql query statement
+    """
     
     fields = [
         "CPT.CPTCode",
@@ -65,7 +77,11 @@ def param_query(codes):
     return f"""SELECT DISTINCT {", ".join(fields)} FROM {def_table_join} WHERE {filter_criteria}"""
 
 def retrieve_cdw_data():
-
+    """
+    Summary: COnnect to CDWWork database and retrieve applicable data using SQL
+    Args: none for now
+    Returns: (object) a csv file containing data from CDW
+    """
     engine_cdw = sql.create_engine(f"mssql+pyodbc://{SERVER_HOSP}/{DB}?driver={DRIVER}")
     
     # Check if connection is valid, if not throws type of error from sqlalchemy
