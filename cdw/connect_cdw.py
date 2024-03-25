@@ -23,7 +23,7 @@ DB = os.getenv("DB")
 # icd_input = ''
 # keyword_input = ''
 cpt_input = 'cpt_current'
-output_file = "test_cpt"
+output_file = "new_cpt"
 
 
 # parse input files
