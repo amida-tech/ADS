@@ -14,7 +14,7 @@ The ADS repository serves to automate our research and development of codesets t
 Add high level details here
 
 ## GEMs
-Add high level details here
+This script uses General Equivalnce Mappings (GEMs) to do backward mappings from ICD-10 codes to ICD-9 codes. 
 
 ## cdw
-Add high level details here
+This script retrieves CDW data for specific type of codesets.
