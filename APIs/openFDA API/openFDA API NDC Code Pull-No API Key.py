@@ -25,6 +25,12 @@ df = pd.read_excel(excel_file_path)
 # Extract the column as a Pandas Series
 column_series = df[column_name]
 
+# Remove "\" or "/" values from the column_series
+column_series = column_series.str.replace(r'[\/\\]', '', regex=True)
+
+# Replace double spaces with single spaces
+column_series = column_series.str.replace(r'\s{2,}', ' ')
+
 # Convert the Pandas Series to a list and exclude the column name as the first element
 column_list = [keyword.replace(' ', '+') for keyword in column_series.tolist()]
 
