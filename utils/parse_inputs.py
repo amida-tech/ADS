@@ -1,6 +1,6 @@
 icd_input = 'icd_brain'
 cpt_input = 'cpt_brain'
-ndc_input = 'ndc'
+ndc_input = ''
 keyword_input = ''
 
 # parse input files
@@ -17,10 +17,16 @@ def read_inputs(filename, code):
     with open(f'./codeset/input/{filename}.txt', "r") as file:
 
         # parses and split text files into specific lists for inputs to sql query
-        if code == 'icd':
-            codeset = "".join(f"{line.rstrip()[:3]}," for line in file)
-            codeset = list(set(codeset.split(",")))
+        if code == 'icd' or code == 'icd-current':
+            if code == 'icd':
+                codeset = "".join(f"{line.rstrip()[:3]}," for line in file)
+                codeset = list(set(codeset.split(",")))
+                codeset = ','.join(filter(None, codeset))
 
+            if code == 'icd-current':
+                codeset = "".join(f"{line.rstrip()}," for line in file)
+                codeset = codeset.rstrip(',')
+            
         if code == 'cpt':
             codeset = "".join(f"{line.rstrip()}," for line in file)
             codeset = codeset.rstrip(',')
@@ -36,9 +42,9 @@ def read_inputs(filename, code):
 
 if __name__ == '__main__':
 
-    code_list = [(icd_input,'icd'), (cpt_input,'cpt'), (ndc_input, 'ndc'), (keyword_input, 'keyword')]
+    code_list = [(icd_input,'icd'), (icd_input,'icd-current'), (cpt_input,'cpt'), (ndc_input, 'ndc'), (keyword_input, 'keyword')]
     
     # loops through each type of codeset
     for filename, code in code_list:
         print(f"{read_inputs(filename, code)}")
-        print(f'                               ')
+        print(f' ')
