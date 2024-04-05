@@ -138,34 +138,46 @@ if __name__ == "__main__":
 
     for ndc in ndc_list:
         parts = ndc.split('-')
-        product_code = parts[1]
-        if len(product_code) == 3:
-            parts[1] = product_code.zfill(4)  # Add leading zero
-            formatted_ndc_list.append('-'.join(parts))
-        else:
+        try:
+            product_code = parts[1]
+            if len(product_code) == 3:
+                parts[1] = product_code.zfill(4)  # Add leading zero
+                formatted_ndc_list.append('-'.join(parts))
+            else:
+                formatted_ndc_list.append(ndc)
+        except IndexError:
             formatted_ndc_list.append(ndc)
+            print(f'IndexError for NDC code:{ndc}, check NDC code in final output')
             
     formatted_ndc_list_2 = []
     
     for ndc in formatted_ndc_list:
         parts = ndc.split('-')
-        labeler_code = parts[0]
-        if len(labeler_code) == 4:
-            parts[0] = labeler_code.zfill(5)  # Add leading zero
-            formatted_ndc_list_2.append('-'.join(parts))
-        else:
+        try:
+            labeler_code = parts[0]
+            if len(labeler_code) == 4:
+                parts[0] = labeler_code.zfill(5)  # Add leading zero
+                formatted_ndc_list_2.append('-'.join(parts))
+            else:
+                formatted_ndc_list_2.append(ndc)
+        except IndexError:
             formatted_ndc_list_2.append(ndc)
+            print(f'IndexError for NDC code:{ndc}, check NDC code in final output')
 
     formatted_ndc_list_3 = []
 
     for ndc in formatted_ndc_list_2:
         parts = ndc.split('-')
-        package_code = parts[2]
-        if len(package_code) == 1:
-            parts[2] = package_code.zfill(2)  # Add leading zero
-            formatted_ndc_list_3.append('-'.join(parts))
-        else:
+        try:
+            package_code = parts[2]
+            if len(package_code) == 1:
+                parts[2] = package_code.zfill(2)  # Add leading zero
+                formatted_ndc_list_3.append('-'.join(parts))
+            else:
+                formatted_ndc_list_3.append(ndc)
+        except IndexError:
             formatted_ndc_list_3.append(ndc)
+            print(f'IndexError for NDC code:{ndc}, check NDC code in final output')
     
     df['NDC'] = formatted_ndc_list_3
 
