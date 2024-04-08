@@ -109,7 +109,7 @@ def process_data(results):
         for package in packaging:
             package_ndc = package.get("package_ndc")
             description = package.get("description")
-            drug_name_with_dose = (f'{generic_name} ' if generic_name else f'{brand_name} ') + (f'{strength} ' if strength else '') + f'{description}'
+            drug_name_with_dose = (f'{generic_name} ' if generic_name else f'{brand_name} ') + (f'{strength} ' if strength else '')
             records.append([package_ndc, drug_name_with_dose])
     return records
 
@@ -180,6 +180,15 @@ if __name__ == "__main__":
             print(f'IndexError for NDC code:{ndc}, check NDC code in final output')
     
     df['NDC'] = formatted_ndc_list_3
+
+    def remove_suffix(df, column_name):
+        df[column_name] = df[column_name].str.replace(r'-\d{2}$', '', regex=True)
+        return df
+    
+    df = remove_suffix(df, 'NDC')
+
+    # Remove duplicate NDC codes
+    df.drop_duplicates(subset=['NDC'], inplace=True)
 
     # Find the parent folder "GitHub Saved Progress"
     parent_folder_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
