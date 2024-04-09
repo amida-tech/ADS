@@ -1,7 +1,10 @@
-icd_input = 'icd_brain'
-cpt_input = 'cpt_brain'
-ndc_input = ''
+# text file name to update
+
+icd_input = ''
+cpt_input = 'test_cpt'
+ndc_input = 'ndc_test'
 keyword_input = ''
+output_filename = 'test_output'
 
 # parse input files
 def read_inputs(filename, code):
@@ -11,10 +14,8 @@ def read_inputs(filename, code):
           code(str): type of code set (icd, cpt, keyword)
     Returns: string: code set values
     """
-    if filename is None or filename == '':
-        return f'No filename provided for {code} type'
 
-    with open(f'./codeset/input/{filename}.txt', "r") as file:
+    with open(f'./utils/codeset/input/{filename}.txt', "r") as file:
 
         # parses and split text files into specific lists for inputs to sql query
         if code == 'icd' or code == 'icd-current':
@@ -27,12 +28,12 @@ def read_inputs(filename, code):
                 codeset = "".join(f"{line.rstrip()}," for line in file)
                 codeset = codeset.rstrip(',')
             
-        if code == 'cpt':
+        if code == 'cpt' or code == 'snomed':
             codeset = "".join(f"{line.rstrip()}," for line in file)
             codeset = codeset.rstrip(',')
 
         if code == 'ndc':
-            codeset = "".join(f"'{line.rstrip()[:13]}'," for line in file)
+            codeset = "".join(f"{line.rstrip()[:13]}," for line in file)
 
         if code == 'keyword':
             codeset = "".join(f"CPTName LIKE '%{line.rstrip()}%' OR " for line in file)
@@ -45,6 +46,9 @@ if __name__ == '__main__':
     code_list = [(icd_input,'icd'), (icd_input,'icd-current'), (cpt_input,'cpt'), (ndc_input, 'ndc'), (keyword_input, 'keyword')]
     
     # loops through each type of codeset
-    for filename, code in code_list:
-        print(f"{read_inputs(filename, code)}")
-        print(f' ')
+    with open(f'./utils/codeset/output/{output_filename}.txt','a') as txtfile:
+        for filename, code in code_list:
+                if filename is None or filename == '':
+                    pass
+                else:
+                    txtfile.write(f'{read_inputs(filename, code)}\n')
