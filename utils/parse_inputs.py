@@ -1,8 +1,8 @@
 # text file name to update
 
-icd_input = ''
-cpt_input = 'test_cpt'
-ndc_input = 'ndc_test'
+icd_input = 'icd_brain'
+cpt_input = ''
+ndc_input = 'gi_ndc'
 keyword_input = ''
 output_filename = 'test_output'
 
@@ -33,7 +33,7 @@ def read_inputs(filename, code):
             codeset = codeset.rstrip(',')
 
         if code == 'ndc':
-            codeset = "".join(f"{line.rstrip()[:13]}," for line in file)
+            codeset = "".join(f"{line.rstrip()[:13]}%," for line in file)
 
         if code == 'keyword':
             codeset = "".join(f"CPTName LIKE '%{line.rstrip()}%' OR " for line in file)
