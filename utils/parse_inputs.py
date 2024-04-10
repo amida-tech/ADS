@@ -33,7 +33,7 @@ def read_inputs(filename, code):
             codeset = codeset.rstrip(',')
 
         if code == 'ndc':
-            codeset = "".join(f"{line.rstrip()[:13]}%," for line in file)
+            codeset = "".join(f"{line.rstrip()[:10]}%," for line in file)
 
         if code == 'keyword':
             codeset = "".join(f"CPTName LIKE '%{line.rstrip()}%' OR " for line in file)
