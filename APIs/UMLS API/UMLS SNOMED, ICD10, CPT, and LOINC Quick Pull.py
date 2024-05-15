@@ -5,6 +5,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import os
+import re
 version = 'current'
 
 ## CHANGE INPUTS HERE ##
@@ -359,10 +360,8 @@ for cui in cui_list:
 
 CPT_trans_df = pd.DataFrame({"Data Concept": "Procedure Code", "Data Sub-Concept": "N/A", "Coding Standard": CPT_root, "Code Value": CPT_code, "Code Description": CPT_name})
 
-
-# Keep in mind this pulls the CUI code for UMLS
-# You will need to convert these CUI codes from UMLS codes into their associated SNOMEDCT, ICD10, LNC, CPT, etc codes
-
+# This pulls the CUI code for UMLS
+# Pull the CUI Codes from UMLS
 code_4 = []
 name_4 = [] 
 vocab_type_4 = []
@@ -377,11 +376,11 @@ for x in np.arange(0, len(string_list),1):
     try:
         while True:
             page += 1
-            query = {'string':string,'apiKey':apikey, 'pageNumber':page}
+            query = {'string':string,'apiKey':apikey, 'pageNumber':page, 'sabs': 'LNC'}
             query['includeObsolete'] = 'true'
             #query['includeSuppressible'] = 'true'
             #query['returnIdType'] = "sourceConcept"
-            query['sabs'] = "LNC"
+            # query['sabs'] = "LNC"
             r = requests.get(full_url,params=query)
             r.raise_for_status()
             r.encoding = 'utf-8'
@@ -406,50 +405,68 @@ for x in np.arange(0, len(string_list),1):
     except Exception as except_error:
         print(except_error)
         
-loinc_df = pd.DataFrame({"Data Concept": "Observation Code", "Data Sub-Concept": "N/A", "Coding Standard": vocab_type_4, "Code Value": code_4, "Code Description": name_4})
+loinc_df = pd.DataFrame({"Data Concept": "Procedure Code", "Data Sub-Concept": "N/A", "Coding Standard": vocab_type_4, "Code Value": code_4, "Code Description": name_4})
 
+# Drop any codes that may have been picked up that are not LNC codes
+loinc_df = loinc_df[loinc_df['Code Value'] != "LNC"]
 
-# Converts the LOINC CUI codes from the chunk above into LOINC
+# Converts the LOINC CUI codes from the chunk above into LOINC codes
 
-base_uri = 'https://uts-ws.nlm.nih.gov'
 cui_list = loinc_df["Code Value"]
+base_uri = "https://uts-ws.nlm.nih.gov"
 
 sabs = 'LNC'
 LOINC_name = []
 LOINC_code = []
 LOINC_root = []
+LOINC_term_type = []
+
+def extract_code(url):
+    result = re.search(r'/(\d+-\d+)$', url)
+    if result:
+        return result.group(1)
+    else:
+        return None
 
 for cui in cui_list:
-        page = 0
-        
-        # o.write('SEARCH CUI: ' + cui + '\n' + '\n')
-        
+    content_endpoint = f"/rest/content/current/CUI/{cui}/atoms?"
+    full_url = base_uri + content_endpoint
+    page = 0
+
+    try:
         while True:
             page += 1
-            path = '/search/'+version
-            query = {'apiKey':apikey, 'string':cui, 'sabs':sabs, 'returnIdType':'code', 'pageNumber':page}
-            output = requests.get(base_uri+path, params=query)
-            output.encoding = 'utf-8'
-            #print(output.url)
-        
-            outputJson = output.json()
-        
-            results = (([outputJson['result']])[0])['results']
-            
+            query = {'apiKey': apikey, 'ttys': 'LN,LC', 'pageNumber': page}
+            query['sabs'] = "LNC"
+            r = requests.get(full_url, params=query)
+            r.raise_for_status()
+            r.encoding = 'utf-8'
+            results = r.json()
+
+            for item in np.arange(0, len(results['result']), 1):
+                LOINC_code.append(extract_code(results['result'][item]['code']))
+                LOINC_name.append(results['result'][item]['name'])
+                LOINC_root.append(results['result'][item]['rootSource'])
+                LOINC_term_type.append(results['result'][item]['termType'])
+                
             if len(results) == 0:
                 if page == 1:
-                    #print('No results found for ' + cui +'\n')
-                    # o.write('No results found.' + '\n' + '\n')
-                    break
-                else:
-                    break
-                    
-            for item in results:
-                LOINC_code.append(item['ui'])
-                LOINC_name.append(item['name'])
-                LOINC_root.append(item['rootSource'])
+                    print('No results found for ' + cui)
+                break
 
-loinc_trans_df = pd.DataFrame({"Data Concept": "Observation Code", "Data Sub-Concept": "N/A", "Coding Standard": LOINC_root, "Code Value": LOINC_code, "Code Description": LOINC_name})
+    except requests.exceptions.RequestException as req_err:
+        # Some CUI code atoms don't have LN or LC codes, this addresses that error and skips it
+        # print(f"Request error for CUI {cui}: {req_err}")
+        # Skip to the next CUI
+        continue
+
+    except ValueError as val_err:
+         # Some CUI code atoms don't have LN or LC codes, this also addresses that error and skips it
+        # print(f"JSON decoding error for CUI {cui}: {val_err}")
+        # Skip to the next CUI
+        continue
+
+loinc_trans_df = pd.DataFrame({"Data Concept": "Observation Code", "Data Sub-Concept": LOINC_term_type, "Coding Standard": LOINC_root, "Code Value": LOINC_code, "Code Description": LOINC_name})
 
 # Combine the CPT and LOINC Transformed and Decendents DataFrames
 CPT_LOINC_trans_decend = pd.concat([loinc_trans_df, CPT_trans_df.loc[:]]).drop_duplicates().reset_index(drop=True)
