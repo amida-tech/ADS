@@ -143,6 +143,8 @@ for cui in cui_list:
 
 loinc_trans_df = pd.DataFrame({"Coding Standard": LOINC_root, "Term Type": LOINC_term_type, "Code Value": LOINC_code, "Code Description": LOINC_name})
 
+loinc_trans_df = loinc_trans_df.drop_duplicates(subset=["Code Value"])
+
 # Find the parent folder "GitHub Saved Progress"
 parent_folder_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir, os.pardir))
 
