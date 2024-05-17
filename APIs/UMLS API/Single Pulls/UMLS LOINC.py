@@ -111,7 +111,7 @@ for cui in cui_list:
     try:
         while True:
             page += 1
-            query = {'apiKey': apikey, 'ttys': 'LN,LC', 'pageNumber': page}
+            query = {'apiKey': apikey, 'ttys': 'LC', 'pageNumber': page}
             query['sabs'] = "LNC"
             r = requests.get(full_url, params=query)
             r.raise_for_status()
@@ -130,13 +130,13 @@ for cui in cui_list:
                 break
 
     except requests.exceptions.RequestException as req_err:
-        # Some CUI code atoms don't have LN or LC codes, this addresses that error and skips it
+        # Some CUI code atoms don't have LC codes, this addresses that error and skips it
         # print(f"Request error for CUI {cui}: {req_err}")
         # Skip to the next CUI
         continue
 
     except ValueError as val_err:
-         # Some CUI code atoms don't have LN or LC codes, this also addresses that error and skips it
+         # Some CUI code atoms don't have LC codes, this also addresses that error and skips it
         # print(f"JSON decoding error for CUI {cui}: {val_err}")
         # Skip to the next CUI
         continue
