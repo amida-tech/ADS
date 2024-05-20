@@ -408,7 +408,7 @@ for x in np.arange(0, len(string_list),1):
 loinc_df = pd.DataFrame({"Data Concept": "Procedure Code", "Data Sub-Concept": "N/A", "Coding Standard": vocab_type_4, "Code Value": code_4, "Code Description": name_4})
 
 # Drop any codes that may have been picked up that are not LNC codes
-loinc_df = loinc_df[loinc_df['Code Value'] != "LNC"]
+loinc_df = loinc_df[loinc_df['Code Value'] == "LNC"]
 
 # Converts the LOINC CUI codes from the chunk above into LOINC codes
 
