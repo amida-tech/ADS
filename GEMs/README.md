@@ -1,6 +1,6 @@
 # Medical Code presence in Arrhythmias Dataset
 
-## GEMs Backward Mapping
+## Script Purpose
 This script validates the presence of medical codes in the CDW by ingesting an original file where medical codes were identified. The script should adjust code formats for accurate matching and populate the original file with a "Yes" or "No" in the "In CDW" column to indicate whether each code is present in the CDW.
 
 
