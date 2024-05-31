@@ -19,4 +19,5 @@ A new spreadsheet 'confirmed codes' will be created where the presence of each c
 ## Outputs
 - Excel file containing the following columns:'Code Set', 'Code', 'Code Description' and 'In CDW' + any other columns. 
 
-## Warnings
+## Warnings/Discrepancies 
+- code labeled 786.50 in the CDW, but in the arrythmias dataset it was 786.5. Value is not identified by the script but is in the CDW
