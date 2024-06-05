@@ -20,5 +20,6 @@ A new Excel file titled `confirmed codes` will be created where the presence of 
 - Excel file containing the following columns:'Code Set', 'Code', 'Code Description' and 'In CDW' + any other columns. 
 
 ## Warnings/Discrepancies 
+- Abstain from running code in Jupyter Notebooks. There is a bug causing some CPT codes to not be identified. VSCode is highly preferred.
 - Run this script before adding additional CDW codes, and double check results. It's possible that additional codes pulled when running `Additional_NDC_Keyword_Search.sql` will appears as "No" in the output file. However, these codes should be marked "Yes" if they were the results of our SQL query.
 - Code labeled 786.50 in the CDW, but in the arrythmias dataset it was 786.5. Value is not identified by the script but is in the CDW
