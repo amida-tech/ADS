@@ -15,8 +15,11 @@ sheet_name_ndc_snomed_icd9 = "ndc-snomed-icd9"
 med_codes_icd10_loinc_cpt = pd.read_excel(file_path, sheet_name= sheet_name_icd10_loinc_cpt)
 med_codes_ndc_snomed_icd9 = pd.read_excel(file_path, sheet_name= sheet_name_ndc_snomed_icd9)
 
-#Codes to Check- Enter any medical codes file here. Example file is arrhythmias medical codes.
-file_path_1 = r"codeset/input/arrhythmias_codes.xlsx"  # File with codes to check. Make sure an updated version is in the input folder. There should be a column labeled as 'In CDW' which should be blank.
+#Codes to Check- Enter any medical codes file here.
+Code_Set_Name = "Pancreatic Cancer Code Set"
+
+
+file_path_1 = f"codeset/input/{Code_Set_Name}.xlsx"  # File with codes to check. Make sure an updated version is in the input folder. There should be a column labeled as 'In CDW' which should be blank.
 sheet_name = "Code Set Details"
 confirmed_codes = pd.read_excel(file_path_1, sheet_name=sheet_name)
 confirmed_codes['Code'] = confirmed_codes['Code'].astype(str)
@@ -65,6 +68,8 @@ for index_cs, code_set_val in confirmed_codes["Code Set"].items():
 
 #Update output file path to desired output file path. A new file 'confirmed_codes' will be generated with values representing if codes are found in CDW. 
 
-output_file_path = r'codeset/output/confirmed_codes.xlsx'
+output_file_path = f'codeset/output/{Code_Set_Name}_confirmed.xlsx'
 confirmed_codes.to_excel(output_file_path, index=False)
 
+# Print a message indicating where the file is saved
+print(f"Excel file '{Code_Set_Name}.xlsx' saved in the output folder.")
