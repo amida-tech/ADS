@@ -16,7 +16,7 @@ def read_inputs(filename, code):
     Returns: string: code set values
     """
 
-    with open(f'../utils/codeset/input/{filename}.txt', "r") as file:
+    with open(f'codeset/input/{filename}.txt', "r") as file:
 
         # parses and split text files into specific lists for inputs to sql query
         if code == 'icd10-group' or code == 'icd10' or code == 'icd9':
@@ -48,7 +48,7 @@ if __name__ == '__main__':
     code_list = [(icd10_input,'icd10-group'), (icd10_input,'icd10'), (icd9_input,'icd9'), (cpt_input,'cpt'), (ndc_input, 'ndc'), (keyword_input, 'keyword')]
     
     # loops through each type of codeset
-    with open(f'../utils/codeset/output/{output_filename}.txt','a') as txtfile:
+    with open(f'codeset/output/{output_filename}.txt','a') as txtfile:
         for filename, code in code_list:
                 if filename is None or filename == '':
                     pass
