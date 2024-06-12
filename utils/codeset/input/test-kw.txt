@@ -1,0 +1,13 @@
+Enoxaparin
+Heparin
+Digoxin
+Amiodarone
+Diltiazem
+Esmolol
+Metoprolol
+Nexterone
+Procainamide
+Propranolol
+Sotalol
+Verapamil
+Adenosine
