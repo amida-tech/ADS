@@ -2,12 +2,19 @@ import pandas as pd
 
 
 Name_of_Code_Set = "Musc Hip" # Enter name of condition(Arrythmias, GI Cancer etc.)
-file_name = "~EXAMPLE~"  #Enter file name stored in input folder
+file_name = "musc_hip"  #Enter file name stored in input folder
 
-input_directory = f"codeset/input/{file_name}"
-output_directory = f"codeset/output/{Name_of_Code_Set}.txt/"
+input_directory = f"codeset/input/{file_name}.xlsx"
+output_directory = f"codeset/output/{Name_of_Code_Set}.txt"
 
-df = pd.read_excel(input_directory, sheet_name="Code Set Details")
+default = pd.read_excel(input_directory, sheet_name="Code Set Details")
+
+df = default.drop(default[default['In CDW'] == 'No'].index)
+
+#splitting phrases if they have a semicolon
+
+df['CFR Criteria'] = df['CFR Criteria'].str.split('; ')
+df = df.explode('CFR Criteria')
 
 top_dicts = df['CFR Criteria'].unique()
 
@@ -43,7 +50,7 @@ with open(output_directory, "w") as f:
         for code_type, code in v:
             if code_type == "LOINC":
                 loinc_appender.append(str(code))
-        loincs = f"{k} LOINC codeset:\n '{', '.join(loinc_appender)}'\n"
+        loincs = f"{k} LOINC codeset:\n '{','.join(loinc_appender)}'\n"
 
         if len(loinc_appender) > 0:
             f.write(f"{loincs} \n")
@@ -57,7 +64,7 @@ with open(output_directory, "w") as f:
         for code_type, code in v:
             if code_type == "ICD-10":
                 icd_10_appender.append(str(code))
-        icd_10 = f"{k} ICD-10 codeset:\n '{', '.join(icd_10_appender)}'\n"
+        icd_10 = f"{k} ICD-10 codeset:\n '{','.join(icd_10_appender)}'\n"
 
         if len(icd_10_appender) > 0:
             f.write(f"{icd_10} \n")
@@ -70,7 +77,7 @@ with open(output_directory, "w") as f:
         for code_type, code in v:
             if code_type == "CPT":
                 cpt_appender.append(str(code))
-        cpt = f"{k} CPT codeset:\n '{', '.join(cpt_appender)}'\n"
+        cpt = f"{k} CPT codeset:\n '{','.join(cpt_appender)}'\n"
 
 
         
@@ -84,7 +91,7 @@ with open(output_directory, "w") as f:
         for code_type, code in v:
             if code_type == "ICD-9":
                 icd_9_appender.append(str(code))
-        icd_9 = f"{k} ICD-9 codeset:\n '{', '.join(icd_9_appender)}'\n"
+        icd_9 = f"{k} ICD-9 codeset:\n '{','.join(icd_9_appender)}'\n"
 
 
 
@@ -97,8 +104,8 @@ with open(output_directory, "w") as f:
         ndc_appender = []
         for code_type, code in v:
             if code_type == "NDC":
-                ndc_appender.append(str(code))
-        ndc = f"{k} NDC codeset:\n '{', '.join(ndc_appender)}'\n"
+              ndc_appender.append(f"{str(code)}%")
+        ndc = f"{k} NDC codeset:\n '{','.join(ndc_appender)}'\n"
 
 
         if len(ndc_appender) > 0:
@@ -110,8 +117,8 @@ with open(output_directory, "w") as f:
         keyword_appender = []
         for code_type, code in v:
             if code_type == "Keyword":
-                keyword_appender.append(f"({str(code)})")
-        keyword = f"{k} Keyword codeset:\n '{', '.join(keyword_appender)}'\n"
+                keyword_appender.append(f"%{str(code)}%")
+        keyword = f"{k} Keyword codeset:\n '{','.join(keyword_appender)}'\n"
 
 
         if len(keyword_appender) > 0:
