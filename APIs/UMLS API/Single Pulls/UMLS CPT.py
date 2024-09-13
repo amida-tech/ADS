@@ -220,7 +220,7 @@ CPT_decend = pd.DataFrame({"VASRD Code": decend_CPT_DC_Code, "Data Concept": dec
 
 CPT_trans_decend = pd.concat([CPT_decend, CPT_trans_df.loc[:]]).drop_duplicates().reset_index(drop=True)
 
-# Find the parent folder "GitHub Saved Progress"
+# Find the parent folder "APIs"
 parent_folder_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir, os.pardir))
 
 # Define the output folder path
