@@ -2,11 +2,10 @@
 apikey = 'YOUR API KEY HERE'
 
 #Output Excel Sheet Name
-Excel_Sheet_Name = "EXCEL SHEET NAME HERE"
+Condition = "Finger"
 
 #Input Excel Sheet with Keywords Name
-excel_file_keywords = 'EXCEL SHEET NAME HERE.xlsx'
-
+excel_file_input_name = 'Finger Keywords'
 
 ## End of requested inputs ##
 
@@ -22,8 +21,7 @@ version = 'current'
 column_name = 'Keywords'
 
 # Read the Excel file
-excel_file_path = excel_file_keywords
-df = pd.read_excel(excel_file_path)
+df = pd.read_excel('input/' + excel_file_input_name + '.xlsx')
 df = df[df["Code Set"] == "CPT"]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
@@ -220,23 +218,20 @@ CPT_decend = pd.DataFrame({"VASRD Code": decend_CPT_DC_Code, "Data Concept": dec
 
 CPT_trans_decend = pd.concat([CPT_decend, CPT_trans_df.loc[:]]).drop_duplicates().reset_index(drop=True)
 
-# Find the parent folder "APIs"
-parent_folder_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir, os.pardir))
+# Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
+CPT_full_grouped = CPT_trans_decend.groupby('Code').agg({
+    'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
+    'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
+    'CFR Criteria': lambda x: '; '.join(x.astype(str).unique()),
+    'Code Set': 'first',  # Retain 'Code Set' as it doesn't need concatenation
+    'Code Description': 'first',
+    'Keyword': lambda x: '; '.join(x.astype(str).unique())
+}).reset_index()
 
-# Define the output folder path
-output_folder_path = os.path.join(parent_folder_path, "output")
-
-# Check if the output folder exists, if not, create it
-if not os.path.exists(output_folder_path):
-    os.makedirs(output_folder_path)
-    print(f"output folder created successfully.")
-
-# Define the path for the output Excel file
-excel_path = os.path.join(output_folder_path, f'{Excel_Sheet_Name}.xlsx')
-
-# Write DataFrame to the Excel file
-CPT_trans_decend.to_excel(excel_path, index=False)
+## Save file
+outpath = 'output/'
+file_name = f"{Condition}_cpt_codes.xlsx"
+CPT_full_grouped.to_excel(outpath + file_name)
 
 # Print a message indicating where the file is saved
-print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the output folder.")
-
+print(f"Excel file '{file_name}' saved in the output folder.")
