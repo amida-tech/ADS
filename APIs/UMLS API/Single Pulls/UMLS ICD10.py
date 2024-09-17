@@ -2,10 +2,10 @@
 apikey = 'YOUR API KEY HERE'
 
 #Output Excel Sheet Name
-Excel_Sheet_Name = "EXCEL SHEET NAME HERE"
+Condition = "Finger Test"
 
 #Input Excel Sheet with Keywords Name
-excel_file_keywords = 'EXCEL SHEET NAME HERE.xlsx'
+excel_file_input_name = 'Finger Keywords ICD10'
 
 
 ## End of Requested Inputs ##
@@ -22,8 +22,7 @@ version = 'current'
 column_name = 'Keywords'
 
 # Read the Excel file
-excel_file_path = excel_file_keywords
-df = pd.read_excel(excel_file_path)
+df = pd.read_excel('input/' + excel_file_input_name + '.xlsx')
 df = df[df["Code Set"] == "ICD-10"]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
@@ -56,35 +55,56 @@ data_concept_ICD_10 = []
 cfr_criteria_ICD_10 = []
 names = []
 
-names = []
+# Additional API to supplement UMLS ICD10 API call
 
-for x in np.arange(0, len(string_list),1):
+# Process string_list and retrieve data
+for x in np.arange(0, len(string_list), 1):
     list_item = string_list[x]
     names.append(list_item.replace(" ", "_"))
 
-# Get ICD10 Codes from another API source
-# This is because UMLS is lacking alone in their ICD10 call
-
-for x in np.arange(0, len(names),1):
+for x in np.arange(0, len(names), 1):
     value = names[x]
     string = string_list[x]
     DC_code = df["VASRD Code"][df['Keyword'] == string].to_list()[0]
     CFR_criteria = df['CFR Criteria'][df['Keyword'] == string].to_list()[0]
     data_concpet = df['Data Concept'][df['Keyword'] == string].to_list()[0]
+
     URL = f"https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?sf=code,name&terms={value}&maxList=500"
     response = requests.get(URL)
-    variable = response.json()
-    
-    for y in np.arange(0, len(variable[3]),1):
-        clin_table_ICD10_code.append(variable[3][y][0])
-        clin_table_ICD10_name.append(variable[3][y][1])
-        dc_code_ICD_10.append(DC_code)
-        keyword_ICD_10.append(string)
-        cfr_criteria_ICD_10.append(CFR_criteria)
-        data_concept_ICD_10.append(data_concpet)
-        
-clin_table_test_pd = pd.DataFrame({"VASRD Code": dc_code_ICD_10, "Data Concept": data_concept_ICD_10,"CFR Criteria": cfr_criteria_ICD_10, "Code Set": "ICD-10", "Code": clin_table_ICD10_code, "Code Description": clin_table_ICD10_name, "Keyword": keyword_ICD_10}).drop_duplicates().reset_index(drop=True)
 
+    # Check for a valid response
+    if response.status_code == 200:
+        try:
+            variable = response.json()
+            
+            # Ensure the expected structure is present in the response
+            if len(variable) > 3 and variable[3]:
+                for y in np.arange(0, len(variable[3]), 1):
+                    clin_table_ICD10_code.append(variable[3][y][0])
+                    clin_table_ICD10_name.append(variable[3][y][1])
+                    dc_code_ICD_10.append(DC_code)
+                    keyword_ICD_10.append(string)
+                    cfr_criteria_ICD_10.append(CFR_criteria)
+                    data_concept_ICD_10.append(data_concpet)
+            else:
+                print(f"No supplemental ICD-10 data found for {value}")
+        except requests.exceptions.JSONDecodeError:
+            print(f"Error parsing JSON for {value}")
+    else:
+        print(f"Error: Received status code {response.status_code} for {value}")
+
+# Create DataFrame and drop duplicates
+clin_table_test_pd = pd.DataFrame({
+    "VASRD Code": dc_code_ICD_10, 
+    "Data Concept": data_concept_ICD_10, 
+    "CFR Criteria": cfr_criteria_ICD_10, 
+    "Code Set": "ICD-10", 
+    "Code": clin_table_ICD10_code, 
+    "Code Description": clin_table_ICD10_name, 
+    "Keyword": keyword_ICD_10
+}).drop_duplicates().reset_index(drop=True)
+
+# Start of UMLS API call
 # Keep in mind this pulls the CUI code for UMLS
 # You will need to convert these CUI codes from UMLS codes into their associated SNOMEDCT, ICD10, LNC, CPT, etc codes
 
@@ -259,23 +279,23 @@ ICD10_trans_decend = pd.concat([ICD10_decend, icd10_trans_df.loc[:]]).drop_dupli
 # Combine the ICD10 pull from a different API and merge it with the UMLS pull 
 ICD10_full = pd.concat([clin_table_test_pd, ICD10_trans_decend.loc[:]]).drop_duplicates().reset_index(drop=True)
 
-# Find the parent folder "GitHub Saved Progress"
-parent_folder_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir, os.pardir))
+# Filter rows where 'Code' contains a decimal point
+ICD10_full_filtered = ICD10_full[ICD10_full['Code'].str.contains(r'\.')]
 
-# Define the output folder path
-output_folder_path = os.path.join(parent_folder_path, "output")
+# Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
+ICD10_full_grouped = ICD10_full_filtered.groupby('Code').agg({
+    'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
+    'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
+    'CFR Criteria': lambda x: '; '.join(x.astype(str).unique()),
+    'Code Set': 'first',  # Retain 'Code Set' as it doesn't need concatenation
+    'Code Description': 'first',
+    'Keyword': lambda x: '; '.join(x.astype(str).unique())
+}).reset_index()
 
-# Check if the output folder exists, if not, create it
-if not os.path.exists(output_folder_path):
-    os.makedirs(output_folder_path)
-    print(f"output folder created successfully.")
-
-# Define the path for the output Excel file
-excel_path = os.path.join(output_folder_path, f'{Excel_Sheet_Name}.xlsx')
-
-# Write DataFrame to the Excel file
-ICD10_full.to_excel(excel_path, index=False)
+## Save file
+outpath = 'output/'
+file_name = f"{Condition}_icd10_codes.xlsx"
+ICD10_full_grouped.to_excel(outpath + file_name)
 
 # Print a message indicating where the file is saved
-print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the output folder.")
-
+print(f"Excel file '{file_name}' saved in the output folder.")
