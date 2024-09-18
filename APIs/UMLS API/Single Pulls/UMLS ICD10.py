@@ -201,7 +201,7 @@ ICD10_trans_decend = pd.concat([ICD10_decend, icd10_trans_df.loc[:]]).drop_dupli
 # Combine the ICD10 pull from a different API and merge it with the UMLS pull 
 ICD10_full = pd.concat([clin_table_test_pd, ICD10_trans_decend.loc[:]]).drop_duplicates().reset_index(drop=True)
 
-# Find the parent folder "GitHub Saved Progress"
+# Find the parent folder "APIs"
 parent_folder_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir, os.pardir))
 
 # Define the output folder path
