@@ -16,7 +16,7 @@ med_codes_icd10_loinc_cpt = pd.read_excel(file_path, sheet_name= sheet_name_icd1
 med_codes_ndc_snomed_icd9 = pd.read_excel(file_path, sheet_name= sheet_name_ndc_snomed_icd9)
 
 #Codes to Check- Enter any medical codes file here.
-Code_Set_Name = "Pancreatic Cancer Code Set"
+Code_Set_Name = "NDC Codes"
 
 
 file_path_1 = f"codeset/input/{Code_Set_Name}.xlsx"  # File with codes to check. Make sure an updated version is in the input folder. There should be a column labeled as 'In CDW' which should be blank.
