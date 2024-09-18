@@ -19,7 +19,7 @@ import os
 version = 'current'
 
 # Keyword Column Name
-column_name = 'Keywords'
+column_name = 'Keyword'
 
 # Read the Excel file
 df = pd.read_excel('input/' + excel_file_input_name + '.xlsx')
