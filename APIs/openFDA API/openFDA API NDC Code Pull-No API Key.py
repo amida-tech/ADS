@@ -105,12 +105,13 @@ def process_data(results):
         generic_name = result.get("generic_name")
         brand_name = result.get("brand_name")
         packaging = result.get("packaging", [])
+        marketing_category = result.get("marketing_category")
         strength = result.get("active_ingredients", [{}])[0].get("strength")
         for package in packaging:
             package_ndc = package.get("package_ndc")
             description = package.get("description")
             drug_name_with_dose = (f'{generic_name} ' if generic_name else f'{brand_name} ') + (f'{strength} ' if strength else '')
-            records.append([package_ndc, drug_name_with_dose])
+            records.append([package_ndc, drug_name_with_dose, marketing_category])
     return records
 
 def main(keywords):
@@ -121,7 +122,7 @@ def main(keywords):
             records += process_data(results)
         else:
             print(f"No data found for keyword: {keyword} \n")
-    df = pd.DataFrame(records, columns=["NDC", "DrugNameWithDose"])
+    df = pd.DataFrame(records, columns=["NDC", "DrugNameWithDose", "MarketingCategory"])
     
         # Drop duplicate rows based on the 'NDC' column
     df.drop_duplicates(subset=['NDC'], inplace=True)
