@@ -1,5 +1,5 @@
 ## CHANGE INPUTS HERE ##
-apikey = '903c7d74-6a9e-4d12-a3eb-6f7d41a21c2d'
+apikey = 'YOUR API KEY HERE'
 
 #Output Excel Sheet Name
 Condition = "Test Condition SNOMED"
