@@ -22,6 +22,7 @@ column_name = 'Keyword'
 
 # Read the Excel file
 df = pd.read_excel('input/' + excel_file_input_name + '.xlsx')
+df = df[df["Code Set"] != "NDC"]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
 df_combined = df.groupby('Keyword').agg({
