@@ -228,6 +228,9 @@ SNOMED_CT_full_grouped = SNOMED_CT_trans_decend.groupby('Code').agg({
     'Keyword': lambda x: '; '.join(x.astype(str).unique())
 }).reset_index()
 
+# Replace 'SNOMEDCT_US' with 'SNOMED-CT' in the 'Code Set' column
+SNOMED_CT_full_grouped['Code Set'] = SNOMED_CT_full_grouped['Code Set'].replace('SNOMEDCT_US', 'SNOMED-CT')
+
 ## Save file
 outpath = 'output/'
 file_name = f"{Condition}_SNOMED_CT_codes.xlsx"
