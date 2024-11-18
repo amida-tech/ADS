@@ -1,8 +1,8 @@
 import pandas as pd
 
 
-Name_of_Code_Set = "Musc Hip" # Enter name of condition(Arrythmias, GI Cancer etc.)
-file_name = "musc_hip"  #Enter file name stored in input folder
+Name_of_Code_Set = "" # Enter name of condition(Arrythmias, GI Cancer etc.)
+file_name = ""  #Enter file name stored in input folder
 
 input_directory = f"codeset/input/{file_name}.xlsx"
 output_directory = f"codeset/output/{Name_of_Code_Set}.txt"
@@ -12,6 +12,7 @@ default = pd.read_excel(input_directory, sheet_name="Code Set Details")
 df = default.drop(default[default['In CDW'] == 'No'].index)
 
 #splitting phrases if they have a semicolon
+df['Code Set'] = df['Code Set'].str.split().str.join("")
 
 df['CFR Criteria'] = df['CFR Criteria'].str.split('; ')
 df = df.explode('CFR Criteria')
