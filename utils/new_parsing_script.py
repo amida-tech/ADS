@@ -115,16 +115,16 @@ with open(output_directory, "w") as f:
 
     #Compiles all SNOMED-CT Codes   
     for k,v in main.items():
-        cpt_appender = []
+        snomed_appender = []
         for code_type, code in v:
             if code_type == "SNOMED-CT":
-                cpt_appender.append(str(code))
-        cpt = f"{k} SNOMED-CT codeset:\n '{','.join(cpt_appender)}'\n"
+                snomed_appender.append(str(code))
+        snomed = f"{k} SNOMED-CT codeset:\n '{','.join(snomed_appender)}'\n"
 
 
         
-        if len(cpt_appender) > 0:
-            f.write(f"{cpt} \n")
+        if len(snomed_appender) > 0:
+            f.write(f"{snomed} \n")
     f.write("\n\n\n") 
 
     #Compiles Keyword Codes
