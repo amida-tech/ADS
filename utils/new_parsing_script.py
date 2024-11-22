@@ -113,6 +113,20 @@ with open(output_directory, "w") as f:
             f.write(f"{ndc} \n")
     f.write("\n\n\n")
 
+    #Compiles all SNOMED-CT Codes   
+    for k,v in main.items():
+        snomed_appender = []
+        for code_type, code in v:
+            if code_type == "SNOMED-CT":
+                snomed_appender.append(str(code))
+        snomed = f"{k} SNOMED-CT codeset:\n '{','.join(snomed_appender)}'\n"
+
+
+        
+        if len(snomed_appender) > 0:
+            f.write(f"{snomed} \n")
+    f.write("\n\n\n") 
+
     #Compiles Keyword Codes
     for k,v in keyword_dict.items():
         keyword_appender = []
