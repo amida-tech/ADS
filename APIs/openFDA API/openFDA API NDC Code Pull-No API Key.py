@@ -1,26 +1,34 @@
-#!/usr/bin/env python
-# coding: utf-8
+apikey = 'YOUR API KEY HERE'
+
+#Output Excel Sheet Name
+Condition = "Test Update"
+
+#Input Excel Sheet Name
+excel_file_input_name = 'Test Heart Medications'
+
+## End of Requested Inputs ##
 
 import requests 
 import pandas as pd
 import os
 
-apikey = 'YOUR API KEY HERE'
-
-#Output Excel Sheet Name
-Excel_Sheet_Name = "EXCEL SHEET NAME HERE"
-
-#Input Excel Sheet with Keywords Name
-excel_file_keywords = 'GI Cancer Med Keywords.xlsx'
-
 # Keyword Column Name
-column_name = 'Keywords'
-
-## End of Requested Inputs ##
+column_name = 'Keyword'
 
 # Read the Excel file
-excel_file_path = excel_file_keywords
-df = pd.read_excel(excel_file_path)
+df = pd.read_excel('input/' + excel_file_input_name + '.xlsx')
+df = df[df["Data Concept"] == "Medication"]
+
+# Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
+df_combined = df.groupby('Keyword').agg({
+    'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
+    'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
+    'CFR Criteria': lambda x: '; '.join(x.astype(str).unique()),
+    'Code Set': 'first'  # Retain 'Code Set' as it doesn't need concatenation
+}).reset_index()
+
+# Display the resulting DataFrame
+df = df_combined
 
 # Extract the column as a Pandas Series
 column_series = df[column_name]
@@ -38,12 +46,12 @@ column_list = [keyword.replace(' ', '+') for keyword in column_series.tolist()]
 # Uncomment this line if you want to include the column name in the keyword search 
 # column_list = [keyword.replace(' ', '+') for keyword in [column_name]] + [keyword.replace(' ', '+') for keyword in column_series.tolist()]
 
-modified_list = ['"' + word + '"' for word in column_list]
-string_list = modified_list
+string_list = column_list
+
+df["Keyword"] = string_list
 
 # Now column_list contains the column data with the column name as the first element
 print(string_list)
-
 
 def query_openFDA(keyword):
     # Query for generic_name
@@ -99,43 +107,54 @@ def query_openFDA(keyword):
         print(f'brand_name: Failed to fetch data from openFDA API for {keyword}.')
 
 
-def process_data(results):
+def process_data(results, keyword, original_row):
     records = []
     for result in results:
         generic_name = result.get("generic_name")
         brand_name = result.get("brand_name")
         packaging = result.get("packaging", [])
         strength = result.get("active_ingredients", [{}])[0].get("strength")
+        marketing_category = result.get("marketing_category")
         for package in packaging:
             package_ndc = package.get("package_ndc")
             description = package.get("description")
             drug_name_with_dose = (f'{generic_name} ' if generic_name else f'{brand_name} ') + (f'{strength} ' if strength else '')
-            records.append([package_ndc, drug_name_with_dose])
+            records.append([
+                package_ndc, drug_name_with_dose,
+                original_row['VASRD Code'],
+                original_row['Data Concept'],
+                original_row['CFR Criteria'],
+                original_row['Code Set'],
+                keyword,
+                marketing_category
+            ])
     return records
 
-def main(keywords):
+def main(df_input):
     records = []
-    for keyword in keywords:
+    for _, row in df_input.iterrows():
+        keyword = row['Keyword']
         results = query_openFDA(keyword)
         if results:
-            records += process_data(results)
+            records += process_data(results, keyword, row)
         else:
-            print(f"No data found for keyword: {keyword} \n")
-    df = pd.DataFrame(records, columns=["NDC", "DrugNameWithDose"])
+            print(f"No data found for keyword: {keyword}")
     
-        # Drop duplicate rows based on the 'NDC' column
-    df.drop_duplicates(subset=['NDC'], inplace=True)
-    
-    return df
+    df_api_results = pd.DataFrame(records, columns=[
+        "Code", "Code Description", "VASRD Code", "Data Concept", "CFR Criteria", "Code Set", "Keyword", "MarketingCategory"
+    ])
+    return df_api_results
 
 if __name__ == "__main__":
     # Example list of keywords
-    df = main(string_list)
+    df_processed = main(df)
+    
+    # Format the NDC codes 
 
-    ndc_list = df['NDC']
+    ndc_list = df_processed['Code']
 
     formatted_ndc_list = []
-
+    # Formats the first 5 values XXXXX-AAAA-BB (X values)
     for ndc in ndc_list:
         parts = ndc.split('-')
         try:
@@ -151,6 +170,7 @@ if __name__ == "__main__":
             
     formatted_ndc_list_2 = []
     
+    # Formats the second 4 values XXXXX-AAAA-BB (A values)
     for ndc in formatted_ndc_list:
         parts = ndc.split('-')
         try:
@@ -166,6 +186,8 @@ if __name__ == "__main__":
 
     formatted_ndc_list_3 = []
 
+    # Formats the last 2 values XXXXX-AAAA-BB (B values)
+    # Note: B values are not needed in the final output, but are required to clean for the remove_suffix function to work as intended
     for ndc in formatted_ndc_list_2:
         parts = ndc.split('-')
         try:
@@ -179,36 +201,31 @@ if __name__ == "__main__":
             formatted_ndc_list_3.append(ndc)
             print(f'IndexError for NDC code:{ndc}, check NDC code in final output')
     
-    df['NDC'] = formatted_ndc_list_3
-
+    df_processed['Code'] = formatted_ndc_list_3
+ 
+    # This removes the additional 51655-0856-XX from the end of the NDC code. 
     def remove_suffix(df, column_name):
         df[column_name] = df[column_name].str.replace(r'-\d{2}$', '', regex=True)
         return df
     
-    df = remove_suffix(df, 'NDC')
+    df_processed = remove_suffix(df_processed, 'Code')
 
     # Remove duplicate NDC codes
-    df.drop_duplicates(subset=['NDC'], inplace=True)
+    # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
+    NDC_full_grouped = df_processed.groupby('Code').agg({
+        'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
+        'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
+        'CFR Criteria': lambda x: '; '.join(x.astype(str).unique()),
+        'Code Set': 'first',  # Retain 'Code Set' as it doesn't need concatenation
+        'Code Description': 'first',
+        'Keyword': lambda x: '; '.join(x.astype(str).unique()), 
+        'MarketingCategory': lambda x: '; '.join(x.astype(str).unique())
+    }).reset_index()
 
-    # Find the parent folder "GitHub Saved Progress"
-    parent_folder_path = os.path.abspath(os.path.join(os.getcwd(), os.pardir))
-
-    # Define the output folder path
-    output_folder_path = os.path.join(parent_folder_path, "output")
-
-    # Check if the output folder exists, if not, create it
-    if not os.path.exists(output_folder_path):
-        os.makedirs(output_folder_path)
-        print(f"Folder 'output' created successfully.")
-
-    # Define the excel file name with its path
-    excel_file_path = os.path.join(output_folder_path, f'{Excel_Sheet_Name}.xlsx')
-
-    # Write DataFrame to an Excel file
-    with pd.ExcelWriter(excel_file_path) as writer:
-        df.to_excel(writer, sheet_name="Sheet1", index=False)
+    ## Save file
+    outpath = 'output/'
+    file_name = f"{Condition}_NDC_codes.xlsx"
+    NDC_full_grouped.to_excel(outpath + file_name)
 
     # Print a message indicating where the file is saved
-    print(f"Excel file '{Excel_Sheet_Name}.xlsx' saved in the 'output' folder.")
-
-
+    print(f"Excel file '{file_name}' saved in the output folder.")
