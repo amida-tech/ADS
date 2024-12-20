@@ -177,6 +177,8 @@ RxNorm_full_grouped = RxNorm_trans_df_clean.groupby('Code').agg({
     'Keyword': lambda x: '; '.join(x.astype(str).unique())
 }).reset_index()
 
+RxNorm_full_grouped = RxNorm_full_grouped[RxNorm_full_grouped["Code"].str.len() >= 5]
+
 ## Save file
 outpath = 'output/'
 file_name = f"{Condition}_RxNorm_codes.xlsx"
