@@ -15,6 +15,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import os
+from json.decoder import JSONDecodeError
 version = 'current'
 
 # Keyword Column Name
@@ -137,31 +138,34 @@ for idx, cui in enumerate(cui_list):
             page += 1
             path = '/search/'+version
             query = {'apiKey':apikey, 'string':cui, 'sabs':sabs, 'ttys': 'LN,LC', 'returnIdType':'code', 'pageNumber':page}
-            output = requests.get(base_uri+path, params=query)
-            output.encoding = 'utf-8'
-            #print(output.url)
-        
-            outputJson = output.json()
-        
-            results = (([outputJson['result']])[0])['results']
-                    
-            if len(results) == 0:
-                if page == 1:
-                    #print('No results found for ' + cui +'\n')
-                    # o.write('No results found.' + '\n' + '\n')
-                    break
-                else:
-                    break
-                    
-            for item in results:
-                LOINC_keyword.append(keyword_value)
-                LOINC_DC_Code.append(dc_code)
-                LOINC_CFR_criteria.append(cfr_criteria)
-                LOINC_data_concept.append(data_concept)
-                LOINC_code.append(item['ui'])
-                LOINC_name.append(item['name'])
-                LOINC_root.append(item['rootSource'])
-
+            try:
+                output = requests.get(base_uri+path, params=query)
+                output.encoding = 'utf-8'
+                #print(output.url)
+            
+                outputJson = output.json()
+            
+                results = (([outputJson['result']])[0])['results']
+                        
+                if len(results) == 0:
+                    if page == 1:
+                        #print('No results found for ' + cui +'\n')
+                        # o.write('No results found.' + '\n' + '\n')
+                        break
+                    else:
+                        break
+                        
+                for item in results:
+                    LOINC_keyword.append(keyword_value)
+                    LOINC_DC_Code.append(dc_code)
+                    LOINC_CFR_criteria.append(cfr_criteria)
+                    LOINC_data_concept.append(data_concept)
+                    LOINC_code.append(item['ui'])
+                    LOINC_name.append(item['name'])
+                    LOINC_root.append(item['rootSource'])
+            except JSONDecodeError:
+                print(f"JSONDecodeError encountered for CUI: {cui}. Skipping this entry.")
+                break  # Exit the while loop for this `cui` and proceed to the next one
 LOINC_trans_df = pd.DataFrame({"VASRD Code": LOINC_DC_Code, "Data Concept": LOINC_data_concept, "CFR Criteria": LOINC_CFR_criteria, "Code Set": LOINC_root, "Code": LOINC_code, "Code Description": LOINC_name, "Keyword": LOINC_keyword})
 
 # Get Children of CPT
