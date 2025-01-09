@@ -15,6 +15,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import os
+from json.decoder import JSONDecodeError
 version = 'current'
 
 # Keyword Column Name
@@ -136,30 +137,34 @@ for idx, cui in enumerate(cui_list):
             page += 1
             path = '/search/'+version
             query = {'apiKey':apikey, 'string':cui, 'sabs':sabs, 'returnIdType':'code', 'pageNumber':page}
-            output = requests.get(base_uri+path, params=query)
-            output.encoding = 'utf-8'
-            #print(output.url)
-        
-            outputJson = output.json()
-        
-            results = (([outputJson['result']])[0])['results']
-                    
-            if len(results) == 0:
-                if page == 1:
-                    #print('No results found for ' + cui +'\n')
-                    # o.write('No results found.' + '\n' + '\n')
-                    break
-                else:
-                    break
-                    
-            for item in results:
-                SNOMED_CT_keyword.append(keyword_value)
-                SNOMED_CT_DC_Code.append(dc_code)
-                SNOMED_CT_CFR_criteria.append(cfr_criteria)
-                SNOMED_CT_data_concept.append(data_concept)
-                SNOMED_CT_code.append(item['ui'])
-                SNOMED_CT_name.append(item['name'])
-                SNOMED_CT_root.append(item['rootSource'])
+            try:
+                output = requests.get(base_uri+path, params=query)
+                output.encoding = 'utf-8'
+                #print(output.url)
+            
+                outputJson = output.json()
+            
+                results = (([outputJson['result']])[0])['results']
+                        
+                if len(results) == 0:
+                    if page == 1:
+                        #print('No results found for ' + cui +'\n')
+                        # o.write('No results found.' + '\n' + '\n')
+                        break
+                    else:
+                        break
+                        
+                for item in results:
+                    SNOMED_CT_keyword.append(keyword_value)
+                    SNOMED_CT_DC_Code.append(dc_code)
+                    SNOMED_CT_CFR_criteria.append(cfr_criteria)
+                    SNOMED_CT_data_concept.append(data_concept)
+                    SNOMED_CT_code.append(item['ui'])
+                    SNOMED_CT_name.append(item['name'])
+                    SNOMED_CT_root.append(item['rootSource'])
+            except JSONDecodeError:
+                print(f"JSONDecodeError encountered for CUI: {cui}. Skipping this entry.")
+                break  # Exit the while loop for this `cui` and proceed to the next one
 
 SNOMED_CT_trans_df = pd.DataFrame({"VASRD Code": SNOMED_CT_DC_Code, "Data Concept": SNOMED_CT_data_concept, "CFR Criteria": SNOMED_CT_CFR_criteria, "Code Set": SNOMED_CT_root, "Code": SNOMED_CT_code, "Code Description": SNOMED_CT_name, "Keyword": SNOMED_CT_keyword})
 

@@ -15,6 +15,7 @@ import argparse
 import numpy as np
 import pandas as pd
 import os
+from json.decoder import JSONDecodeError
 version = 'current'
 
 # Keyword Column Name
@@ -136,30 +137,34 @@ for idx, cui in enumerate(cui_list):
             page += 1
             path = '/search/'+version
             query = {'apiKey':apikey, 'string':cui, 'sabs':sabs, 'returnIdType':'code', 'pageNumber':page}
-            output = requests.get(base_uri+path, params=query)
-            output.encoding = 'utf-8'
-            #print(output.url)
-        
-            outputJson = output.json()
-        
-            results = (([outputJson['result']])[0])['results']
-                    
-            if len(results) == 0:
-                if page == 1:
-                    #print('No results found for ' + cui +'\n')
-                    # o.write('No results found.' + '\n' + '\n')
-                    break
-                else:
-                    break
-                    
-            for item in results:
-                CPT_keyword.append(keyword_value)
-                CPT_DC_Code.append(dc_code)
-                CPT_CFR_criteria.append(cfr_criteria)
-                CPT_data_concept.append(data_concept)
-                CPT_code.append(item['ui'])
-                CPT_name.append(item['name'])
-                CPT_root.append(item['rootSource'])
+            try:
+                output = requests.get(base_uri+path, params=query)
+                output.encoding = 'utf-8'
+                #print(output.url)
+            
+                outputJson = output.json()
+            
+                results = (([outputJson['result']])[0])['results']
+                        
+                if len(results) == 0:
+                    if page == 1:
+                        #print('No results found for ' + cui +'\n')
+                        # o.write('No results found.' + '\n' + '\n')
+                        break
+                    else:
+                        break
+                        
+                for item in results:
+                    CPT_keyword.append(keyword_value)
+                    CPT_DC_Code.append(dc_code)
+                    CPT_CFR_criteria.append(cfr_criteria)
+                    CPT_data_concept.append(data_concept)
+                    CPT_code.append(item['ui'])
+                    CPT_name.append(item['name'])
+                    CPT_root.append(item['rootSource'])
+            except JSONDecodeError:
+                print(f"JSONDecodeError encountered for CUI: {cui}. Skipping this entry.")
+                break  # Exit the while loop for this `cui` and proceed to the next one
 
 CPT_trans_df = pd.DataFrame({"VASRD Code": CPT_DC_Code, "Data Concept": CPT_data_concept, "CFR Criteria": CPT_CFR_criteria, "Code Set": CPT_root, "Code": CPT_code, "Code Description": CPT_name, "Keyword": CPT_keyword})
 
