@@ -1,8 +1,8 @@
 import pandas as pd
 
 
-Name_of_Code_Set = "knee" # Enter name of condition(Arrythmias, GI Cancer etc.)
-file_name = "knee"  #Enter file name stored in input folder
+Name_of_Code_Set = "" # Enter name of condition(Arrythmias, GI Cancer etc.)
+file_name = ""  #Enter file name stored in input folder
 
 input_directory = f"codeset/input/{file_name}.xlsx"
 output_directory = f"codeset/output/{Name_of_Code_Set}.txt"
