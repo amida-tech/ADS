@@ -37,9 +37,10 @@ main = (df.groupby('CFR Criteria')['Tuple'].apply(list).to_dict())
 main = {''.join(word.title() if i else word for i, word in enumerate(k.split(' '))): v for k, v in main.items()}
 
 for key in list(main.keys()):  
-    new_key = key.replace(",", "")  # Remove commas
-    if new_key != key:  # Avoid unnecessary reassignments
-        main[new_key] = main.pop(key)  # Remove old key and add new one
+    new_key = key.replace(",", "").replace("(", "").replace(")", "").replace("'", "").replace("-", "").replace("/", "").replace(":", "")  
+
+    if new_key != key:  
+        main[new_key] = main.pop(key)  
 
 
 #creating tuples of Code Set and Code(Keyword)
@@ -49,6 +50,11 @@ keyword_dict = (df.groupby('CFR Criteria')['Tuple_part_2'].apply(list).to_dict()
 #Code below sourced from a website to convert CFR Criteria to camelCase
 keyword_dict = {''.join(word.title() if i else word for i, word in enumerate(k.split(' '))): v for k, v in keyword_dict.items()}
 
+for key in list(keyword_dict.keys()):  
+    new_key = key.replace(",", "").replace("(", "").replace(")", "").replace("'", "").replace("-", "").replace("/", "").replace(":", "")  
+
+    if new_key != key:  
+        keyword_dict[new_key] = keyword_dict.pop(key)  
 
 with open(output_directory, "w") as f:
 
@@ -75,7 +81,7 @@ with open(output_directory, "w") as f:
         for code_type, code in v:
             if code_type == "ICD-10":
                 icd_10_appender.append(str(code))
-        icd_10 = f"Declare @{k}_ICD10 AS VARCHAR(MAX) = \n ('{','.join(icd_10_appender)}')\n"
+        icd_10 = f"Declare @{k}_ICD10 AS VARCHAR(MAX) = ('{','.join(icd_10_appender)}')"
 
         if len(icd_10_appender) > 0:
             f.write(f"{icd_10} \n")
@@ -89,7 +95,7 @@ with open(output_directory, "w") as f:
         for code_type, code in v:
             if code_type == "CPT":
                 cpt_appender.append(str(code))
-        cpt = f"Declare @{k}_cptcodes AS VARCHAR(MAX) = \n ('{','.join(cpt_appender)}')\n"
+        cpt = f"Declare @{k}_cptcodes AS VARCHAR(MAX) = ('{','.join(cpt_appender)}')"
 
 
         if len(cpt_appender) > 0:
@@ -103,7 +109,7 @@ with open(output_directory, "w") as f:
         for code_type, code in v:
             if code_type == "ICD-9":
                 icd_9_appender.append(str(code))
-        icd_9 = f"Declare @{k}_ICD9 AS VARCHAR(MAX)=\n ('{','.join(icd_9_appender)}')\n"
+        icd_9 = f"Declare @{k}_ICD9 AS VARCHAR(MAX) = ('{','.join(icd_9_appender)}')"
 
 
 
@@ -131,7 +137,7 @@ with open(output_directory, "w") as f:
         for code_type, code in v:
             if code_type == "SNOMED-CT":
                 snomed_appender.append(str(code))
-        snomed = f"Declare @{k}_SNOMEDCodes AS VARCHAR(MAX)=\n ('{','.join(snomed_appender)}')\n"
+        snomed = f"Declare @{k}_SNOMEDCodes AS VARCHAR(MAX) = ('{','.join(snomed_appender)}')"
 
         if len(snomed_appender) > 0:
             f.write(f"{snomed} \n")
@@ -145,7 +151,7 @@ with open(output_directory, "w") as f:
         for code_type, code in v:
             if code_type == "Keyword":
                 keyword_appender.append(f"%{str(code)}%")
-        keyword = f"Declare @{k}_keywords = \n ('{','.join(keyword_appender)}')\n"
+        keyword = f"Declare @{k}_keywords = ('{','.join(keyword_appender)}')"
 
 
         if len(keyword_appender) > 0:
