@@ -1,8 +1,8 @@
 import pandas as pd
 
 
-Name_of_Code_Set = "" # Enter name of condition(Arrythmias, GI Cancer etc.)
-file_name = ""  #Enter file name stored in input folder
+Name_of_Code_Set = "knee" # Enter name of condition(Arrythmias, GI Cancer etc.)
+file_name = "knee"  #Enter file name stored in input folder
 
 input_directory = f"codeset/input/{file_name}.xlsx"
 output_directory = f"codeset/output/{Name_of_Code_Set}.txt"
@@ -35,6 +35,11 @@ main = (df.groupby('CFR Criteria')['Tuple'].apply(list).to_dict())
 
 #Code below sourced from a website to convert CFR Criteria to camelCase
 main = {''.join(word.title() if i else word for i, word in enumerate(k.split(' '))): v for k, v in main.items()}
+
+for key in list(main.keys()):  
+    new_key = key.replace(",", "")  # Remove commas
+    if new_key != key:  # Avoid unnecessary reassignments
+        main[new_key] = main.pop(key)  # Remove old key and add new one
 
 
 #creating tuples of Code Set and Code(Keyword)
