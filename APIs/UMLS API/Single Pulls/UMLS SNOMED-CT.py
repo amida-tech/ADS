@@ -24,7 +24,7 @@ column_name = 'Keyword'
 
 # Read the Excel file
 df = pd.read_excel('input/' + excel_file_input_name + '.xlsx')
-df = df[df["Code Set"] != "NDC"]
+df = df[df["Data Concept"] != "Medication"]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
 df_combined = df.groupby('Keyword').agg({
@@ -183,7 +183,7 @@ for idx, row in semantic_types_df.iterrows():
         print(f"JSONDecodeError for row {idx} (URI: {sem_uri}). Skipping this entry.")
         semantic_group_list.append("Error")
     except Exception as e:
-        print(f"Error processing Semantic Group URI for row {idx} (URI: {sem_uri}): {e}")
+        print(f"Error processing Semantic Group URI for {sem_uri}: {e}")
         semantic_group_list.append("Error")
 
 # Add the new column to the DataFrame
@@ -361,7 +361,7 @@ SNOMED_CT_full_grouped = SNOMED_CT_trans_decend.groupby('Code').agg({
 # Replace 'SNOMEDCT_US' with 'SNOMED-CT' in the 'Code Set' column
 SNOMED_CT_full_grouped['Code Set'] = SNOMED_CT_full_grouped['Code Set'].replace('SNOMEDCT_US', 'SNOMED-CT')
 # Reorder columns 
-SNOMED_CT_full_grouped = SNOMED_CT_full_grouped.reindex(["VASRD Code", "Data Concept", "CFR Criteria", "Code Set", "Code", "Code Description", "Keyword", "Semantic Group", "Semantic Type"], axis=1)
+SNOMED_CT_full_grouped = SNOMED_CT_full_grouped.reindex(["VASRD Code", "CFR Criteria", "Code Set", "Code", "Code Description", "Keyword", "Data Concept", "Semantic Group", "Semantic Type"], axis=1)
 
 # Uncomment below if you want to see the expected output file before it is exported to excel
 # SNOMED_CT_full_grouped
