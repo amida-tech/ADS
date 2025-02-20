@@ -1,5 +1,6 @@
 import pandas as pd
 import warnings
+import re
 
 warnings.filterwarnings('ignore')
 
@@ -8,7 +9,7 @@ warnings.filterwarnings('ignore')
 
 
 #Codes to Check- Enter any medical codes file here.
-Code_Set_Name = ""
+Code_Set_Name = "bancer"
 
 
 #medical codes file
@@ -18,9 +19,6 @@ sheet_name_icd10_loinc_cpt = "icd10-cpt-loinc"
 sheet_name_ndc_snomed_icd9 = "ndc-snomed-icd9"
 med_codes_icd10_loinc_cpt = pd.read_excel(file_path, sheet_name= sheet_name_icd10_loinc_cpt)
 med_codes_ndc_snomed_icd9 = pd.read_excel(file_path, sheet_name= sheet_name_ndc_snomed_icd9)
-med_codes_ndc_snomed_icd9.columns = med_codes_ndc_snomed_icd9.columns.str.replace('NDC', 'Code')
-med_codes_ndc_snomed_icd9.columns = med_codes_ndc_snomed_icd9.columns.str.replace('LocalDrugNameWithDose', 'Description')
-
 
 
 
@@ -32,8 +30,15 @@ confirmed_codes['Code'] = confirmed_codes['Code'].astype(str)
 
 
 #NDC values format adjustment. Uses boolean mask to check if values have the CodeSet of "NDC". Then performs format adjustment using regex.
+# Convert to string if not already str
+med_codes_ndc_snomed_icd9['Code'] = med_codes_ndc_snomed_icd9['Code'].astype(str)
+# Boolean mask for NDC codes
 is_ndc = med_codes_ndc_snomed_icd9['CodeSet'] == 'NDC'
-med_codes_ndc_snomed_icd9.loc[is_ndc, 'NDC'] = med_codes_ndc_snomed_icd9.loc[is_ndc, 'Code'].str[:-3]
+# Extract only the first 9 digits (keeping dashes)
+med_codes_ndc_snomed_icd9.loc[is_ndc, 'Code'] = med_codes_ndc_snomed_icd9.loc[is_ndc, 'Code'].str.extract(r'^(\d{5}-\d{4})')[0]
+# Remove possible whitespace
+med_codes_ndc_snomed_icd9['Code'] = med_codes_ndc_snomed_icd9['Code'].str.strip()
+
 
 
 #ICD-10 values format adjustment. Uses boolean mask to check if values have the CodeSet of "ICD-10". Then performs format adjustment using regex.
@@ -42,7 +47,7 @@ med_codes_icd10_loinc_cpt.loc[is_ICD_10, 'Code'] = med_codes_icd10_loinc_cpt.loc
 
 #ICD-9 values format adjustment. Uses boolean mask to check if values have the CodeSet of "NDC". Then performs format adjustment using regex.
 is_ICD_9 = med_codes_ndc_snomed_icd9['CodeSet'] == 'ICD-9'
-med_codes_ndc_snomed_icd9.loc[is_ICD_9, 'NDC'] = med_codes_ndc_snomed_icd9.loc[is_ICD_9, 'Code'].str.replace(r'^(\d+)$', r'\1.0', regex=True)
+med_codes_ndc_snomed_icd9.loc[is_ICD_9, 'Code'] = med_codes_ndc_snomed_icd9.loc[is_ICD_9, 'Code'].str.replace(r'^(\d+)$', r'\1.0', regex=True)
 
 #ICD-9 values format adjustment in codes to check file(ex. changes 150 to 150.0)
 for index, row in confirmed_codes.iterrows():
