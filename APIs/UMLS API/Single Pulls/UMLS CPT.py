@@ -23,7 +23,7 @@ column_name = 'Keyword'
 
 # Read the Excel file
 df = pd.read_excel('input/' + excel_file_input_name + '.xlsx')
-df = df[df["Code Set"] == "CPT"]
+df = df[df["Data Concept"] == "Procedure"]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
 df_combined = df.groupby('Keyword').agg({
@@ -232,6 +232,9 @@ CPT_full_grouped = CPT_trans_decend.groupby('Code').agg({
     'Code Description': 'first',
     'Keyword': lambda x: '; '.join(x.astype(str).unique())
 }).reset_index()
+
+CPT_full_grouped = CPT_full_grouped.reindex(["VASRD Code", "CFR Criteria", "Code Set", "Code", "Code Description", "Keyword", "Data Concept"], axis=1)
+# CPT_full_grouped
 
 ## Save file
 outpath = 'output/'

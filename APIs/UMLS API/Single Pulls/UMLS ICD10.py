@@ -23,7 +23,7 @@ column_name = 'Keyword'
 
 # Read the Excel file
 df = pd.read_excel('input/' + excel_file_input_name + '.xlsx')
-df = df[df["Code Set"] == "ICD-10"]
+df = df[(df["Data Concept"] == "Diagnosis") | (df["Data Concept"] == "Symptom")]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
 df_combined = df.groupby('Keyword').agg({
@@ -291,6 +291,8 @@ ICD10_full_grouped = ICD10_full_filtered.groupby('Code').agg({
     'Code Description': 'first',
     'Keyword': lambda x: '; '.join(x.astype(str).unique())
 }).reset_index()
+
+ICD10_full_grouped = ICD10_full_grouped.reindex(["VASRD Code", "CFR Criteria", "Code Set", "Code", "Code Description", "Keyword", "Data Concept"], axis=1)
 
 ## Save file
 outpath = 'output/'
