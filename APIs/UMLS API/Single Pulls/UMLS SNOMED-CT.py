@@ -180,7 +180,7 @@ for idx, row in semantic_types_df.iterrows():
             expanded_form = "Not Provided"  # or "Flag for review"
         semantic_group_list.append(expanded_form)
     except requests.exceptions.JSONDecodeError:
-        print(f"JSONDecodeError for row {idx} (URI: {sem_uri}). Skipping this entry.")
+        print(f"JSONDecodeError for (URI: {sem_uri}). Skipping this entry.")
         semantic_group_list.append("Error")
     except Exception as e:
         print(f"Error processing Semantic Group URI for {sem_uri}: {e}")
@@ -279,75 +279,8 @@ SNOMED_CT_trans_df = pd.DataFrame({
 # Uncomment out below if you want to see the transformed CUI to SNOMED-CT dataframe 
 # SNOMED_CT_trans_df
 
-# Get Children of SNOMED_CT
-decend_SNOMED_CT_names = []
-decend_SNOMED_CT_values = []
-decend_SNOMED_CT_root = []
-decend_SNOMED_CT_DC_Code = []
-decend_SNOMED_CT_CFR_criteria = []
-decend_SNOMED_CT_data_concept = []
-decend_SNOMED_CT_keyword_value = []
-decend_SNOMED_CT_semantic_type = []
-decend_SNOMED_CT_semantic_group = []
-
-for x in np.arange(0,len(SNOMED_CT_code),1):
-    source = 'SNOMED_CT'
-    string = SNOMED_CT_keyword[x]
-    DC_code = SNOMED_CT_trans_df["VASRD Code"][SNOMED_CT_trans_df['Keyword'] == string].to_list()[0]
-    CFR_criteria = SNOMED_CT_trans_df['CFR Criteria'][SNOMED_CT_trans_df['Keyword'] == string].to_list()[0]
-    data_concept = SNOMED_CT_trans_df['Data Concept'][SNOMED_CT_trans_df['Keyword'] == string].to_list()[0]
-    semantic_group_variable = SNOMED_CT_trans_df['Semantic Group'][SNOMED_CT_trans_df['Keyword'] == string].to_list()[0]
-    semantic_type_variable = SNOMED_CT_trans_df['Semantic Type'][SNOMED_CT_trans_df['Keyword'] == string].to_list()[0]
-    identifier = str(SNOMED_CT_code[x])
-    operation = 'children'
-    uri = "https://uts-ws.nlm.nih.gov"
-    content_endpoint = "/rest/content/"+version+"/source/"+source+"/"+identifier+"/"+operation
-
-    pageNumber=0
-
-    try:
-        while True:
-            pageNumber += 1
-            query = {'apiKey':apikey,'pageNumber':pageNumber}
-            r = requests.get(uri+content_endpoint,params=query)
-            r.encoding = 'utf-8'
-            items  = r.json()
-
-            if r.status_code != 200:
-                if pageNumber == 1:
-                    # print('No results found.'+'\n')
-                    break
-                else:
-                    break
-
-            # print("Results for page " + str(pageNumber)+"\n")
-
-            for result in items["result"]:
-                decend_SNOMED_CT_keyword_value.append(string)
-                decend_SNOMED_CT_DC_Code.append(DC_code)
-                decend_SNOMED_CT_CFR_criteria.append(cfr_criteria)
-                decend_SNOMED_CT_data_concept.append(data_concept)
-                decend_SNOMED_CT_semantic_type.append(semantic_type_variable)
-                decend_SNOMED_CT_semantic_group.append(semantic_group_variable)
-                decend_SNOMED_CT_values.append(result["ui"])
-                decend_SNOMED_CT_names.append(result["name"])
-                decend_SNOMED_CT_root.append(result["rootSource"])
-
-    except requests.exceptions.JSONDecodeError:
-        print(f"JSONDecodeError for code {SNOMED_CT_code[x]}. Skipping this entry.")
-    except Exception as e:
-        print(f"Error processing children for code {SNOMED_CT_code[x]}: {e}")
-        
-SNOMED_CT_decend = pd.DataFrame({"VASRD Code": decend_SNOMED_CT_DC_Code, "Data Concept": decend_SNOMED_CT_data_concept, "CFR Criteria": decend_SNOMED_CT_CFR_criteria, "Code Set": decend_SNOMED_CT_root, "Code": decend_SNOMED_CT_values, "Code Description": decend_SNOMED_CT_names, "Keyword": decend_SNOMED_CT_keyword_value, "Semantic Group": decend_SNOMED_CT_semantic_group, "Semantic Type": decend_SNOMED_CT_semantic_type})
-
-# Uncomment below if you want to see the dataframe for any pulled decendents 
-# If this dataframe is empty, it means there were no decendants found for your given keywords
-# SNOMED_CT_decend
-
-SNOMED_CT_trans_decend = pd.concat([SNOMED_CT_decend, SNOMED_CT_trans_df.loc[:]]).drop_duplicates().reset_index(drop=True)
-
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
-SNOMED_CT_full_grouped = SNOMED_CT_trans_decend.groupby('Code').agg({
+SNOMED_CT_full_grouped = SNOMED_CT_trans_df.groupby('Code').agg({
     'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
     'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
     'CFR Criteria': lambda x: '; '.join(x.astype(str).unique()),
