@@ -72,8 +72,6 @@ for x in np.arange(0, len(string_list),1):
             page += 1
             query = {'string':string,'apiKey':apikey, 'pageNumber':page}
             query['includeObsolete'] = 'true'
-            #query['includeSuppressible'] = 'true'
-            #query['returnIdType'] = "sourceConcept"
             query['sabs'] = "SNOMEDCT_US"
             r = requests.get(full_url,params=query)
             r.raise_for_status()
@@ -88,9 +86,7 @@ for x in np.arange(0, len(string_list),1):
                     break
                 else:
                     break
-
-            #print("Results for page " + str(page)+"\n")
-
+        
             for result in items:
                 keyword_value_3.append(string)
                 dc_code_3.append(DC_code)
@@ -100,8 +96,9 @@ for x in np.arange(0, len(string_list),1):
                 name_3.append(result['name'])
                 vocab_type_3.append(result['rootSource'])
 
-    except Exception as except_error:
-        print(except_error)
+    except Exception as e:
+        print(f"Error processing keyword {string}: {e}")
+        continue  # Skip this CUI and continue with the next one
         
 SNOMED_CT_df = pd.DataFrame({"VASRD Code": dc_code_3, "Data Concept": data_concept_3, "CFR Criteria": cfr_criteria_3, "Code Set": vocab_type_3, "Code": code_3, "Code Description": name_3, "Keyword": keyword_value_3})
 
@@ -128,7 +125,7 @@ for cui in cui_list:
         response.raise_for_status()  # raise an error for non-200 responses
         json_data = response.json()
     except Exception as e:
-        print(f"Error processing CUI {cui}: {e}")
+        print(f"Error processing Semantic Type for CUI {cui}: {e}")
         continue  # Skip this CUI and continue with the next one
     
     # Extract the semantic type from the response
@@ -180,7 +177,7 @@ for idx, row in semantic_types_df.iterrows():
             expanded_form = "Not Provided"  # or "Flag for review"
         semantic_group_list.append(expanded_form)
     except requests.exceptions.JSONDecodeError:
-        print(f"JSONDecodeError for (URI: {sem_uri}). Skipping this entry.")
+        print(f"JSONDecodeError for Semantic Group (URI: {sem_uri}). Skipping this entry.")
         semantic_group_list.append("Error")
     except Exception as e:
         print(f"Error processing Semantic Group URI for {sem_uri}: {e}")
@@ -261,7 +258,7 @@ for idx, cui in enumerate(cui_list):
                 SNOMED_CT_root.append(item['rootSource'])
 
         except JSONDecodeError:
-            print(f"JSONDecodeError encountered for CUI: {cui}. Skipping this entry.")
+            print(f"JSONDecodeError encountered in SNOMED-CT pull for CUI: {cui}. Skipping this entry.")
             break  # Exit the while loop for this `cui` and proceed to the next one
 
 SNOMED_CT_trans_df = pd.DataFrame({
