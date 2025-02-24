@@ -178,6 +178,7 @@ RxNorm_full_grouped = RxNorm_trans_df_clean.groupby('Code').agg({
 }).reset_index()
 
 RxNorm_full_grouped = RxNorm_full_grouped[RxNorm_full_grouped["Code"].str.len() >= 5]
+RxNorm_full_grouped = RxNorm_full_grouped.reindex(["VASRD Code", "CFR Criteria", "Code Set", "Code", "Code Description", "Keyword", "Data Concept"], axis=1)
 
 ## Save file
 outpath = 'output/'

@@ -235,6 +235,7 @@ LOINC_full_grouped = LOINC_trans_decend.groupby('Code').agg({
 
 # Replace 'LNC' with 'LOINC' in the 'Code Set' column
 LOINC_full_grouped['Code Set'] = LOINC_full_grouped['Code Set'].replace('LNC', 'LOINC')
+LOINC_full_grouped = LOINC_full_grouped.reindex(["VASRD Code", "CFR Criteria", "Code Set", "Code", "Code Description", "Keyword", "Data Concept"], axis=1)
 
 # Filter out codes containing non-numeric values (allow hyphen)
 LOINC_full_grouped = LOINC_full_grouped[LOINC_full_grouped['Code'].str.match(r'^[\d-]+$')]
