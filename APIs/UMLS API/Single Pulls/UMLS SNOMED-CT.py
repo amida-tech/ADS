@@ -18,6 +18,7 @@ import json
 import os
 from json.decoder import JSONDecodeError
 version = 'current'
+base_uri = "https://uts-ws.nlm.nih.gov"
 
 # Keyword Column Name
 column_name = 'Keyword'
@@ -62,9 +63,8 @@ for x in np.arange(0, len(string_list),1):
     DC_code = df["VASRD Code"][df['Keyword'] == string].to_list()[0]
     CFR_criteria = df['CFR Criteria'][df['Keyword'] == string].to_list()[0]
     data_concept = df['Data Concept'][df['Keyword'] == string].to_list()[0]
-    uri = "https://uts-ws.nlm.nih.gov"
     content_endpoint = "/rest/search/"+version
-    full_url = uri+content_endpoint
+    full_url = base_uri+content_endpoint
     page = 0
 
     try:
@@ -87,14 +87,13 @@ for x in np.arange(0, len(string_list),1):
                 else:
                     break
         
-            for result in items:
-                keyword_value_3.append(string)
-                dc_code_3.append(DC_code)
-                cfr_criteria_3.append(CFR_criteria)
-                data_concept_3.append(data_concept)
-                code_3.append(result['ui'])
-                name_3.append(result['name'])
-                vocab_type_3.append(result['rootSource'])
+            keyword_value_3.extend([string for _ in items])
+            dc_code_3.extend([DC_code for _ in items])
+            cfr_criteria_3.extend([CFR_criteria for _ in items])
+            data_concept_3.extend([data_concept for _ in items])
+            code_3.extend([result['ui'] for result in items])
+            name_3.extend([result['name'] for result in items])
+            vocab_type_3.extend([result['rootSource'] for result in items])
 
     except Exception as e:
         print(f"Error processing keyword {string}: {e}")
@@ -106,8 +105,6 @@ SNOMED_CT_df = pd.DataFrame({"VASRD Code": dc_code_3, "Data Concept": data_conce
 # SNOMED_CT_df
 
 # Pull Semantic Types and Semantic Group URI 
-base_uri = "https://uts-ws.nlm.nih.gov"
-
 # Read the list of CUI codes from the input file (one per line)
 cui_list = SNOMED_CT_df["Code"]
 results_list = []
@@ -198,7 +195,6 @@ SNOMED_CT_df = pd.merge(SNOMED_CT_df, semantic_types_group_df[['Code', 'Semantic
 # SNOMED_CT_df
 
 # Converts the SNOMED_CT CUI Codes from the chunk above into SNOMED_CT Codes
-base_uri = 'https://uts-ws.nlm.nih.gov'
 cui_list = SNOMED_CT_df["Code"]
 dc_code_list = SNOMED_CT_df["VASRD Code"]
 cfr_criteria_list = SNOMED_CT_df["CFR Criteria"]
@@ -246,16 +242,19 @@ for idx, cui in enumerate(cui_list):
                 else:
                     break
 
-            for item in results:
-                SNOMED_CT_keyword.append(keyword_value)
-                SNOMED_CT_DC_Code.append(dc_code)
-                SNOMED_CT_CFR_criteria.append(cfr_criteria)
-                SNOMED_CT_data_concept.append(data_concept)
-                SNOMED_CT_semantic_type.append(semantic_type)
-                SNOMED_CT_semantic_group.append(semantic_group)
-                SNOMED_CT_code.append(item['ui'])
-                SNOMED_CT_name.append(item['name'])
-                SNOMED_CT_root.append(item['rootSource'])
+            # Extend the lists with constant values repeated for each item in results
+            count = len(results)
+            SNOMED_CT_keyword.extend([keyword_value] * count)
+            SNOMED_CT_DC_Code.extend([dc_code] * count)
+            SNOMED_CT_CFR_criteria.extend([cfr_criteria] * count)
+            SNOMED_CT_data_concept.extend([data_concept] * count)
+            SNOMED_CT_semantic_type.extend([semantic_type] * count)
+            SNOMED_CT_semantic_group.extend([semantic_group] * count)
+
+            # For values coming from each item in results, use list comprehensions:
+            SNOMED_CT_code.extend([item['ui'] for item in results])
+            SNOMED_CT_name.extend([item['name'] for item in results])
+            SNOMED_CT_root.extend([item['rootSource'] for item in results])
 
         except JSONDecodeError:
             print(f"JSONDecodeError encountered in SNOMED-CT pull for CUI: {cui}. Skipping this entry.")
