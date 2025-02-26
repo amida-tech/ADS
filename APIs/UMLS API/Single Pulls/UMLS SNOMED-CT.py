@@ -5,7 +5,7 @@ apikey = 'YOUR API KEY HERE'
 Condition = "Condition Name"
 
 #Input Excel Sheet with Keywords Name
-excel_file_input_name = 'Condition Keywords'
+csv_file_input_name = 'Condition Keywords'
 
 ## End of requested inputs ##
 
@@ -24,7 +24,7 @@ base_uri = "https://uts-ws.nlm.nih.gov"
 column_name = 'Keyword'
 
 # Read the Excel file
-df = pd.read_excel('input/' + excel_file_input_name + '.xlsx')
+df = pd.read_csv('input/' + csv_file_input_name + '.csv')
 df = df[df["Data Concept"] != "Medication"]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
@@ -142,7 +142,7 @@ for cui in cui_list:
         "Semantic Group URI": semantic_uri
     })
 
-# Create a DataFrame from the results and write to an Excel file
+# Create a DataFrame from the results
 semantic_types_df = pd.DataFrame(results_list)
 
 # Uncomment below if you want to see the dataframe for the CUI codes, Semantic types, and Semantic Group URI
@@ -193,6 +193,18 @@ SNOMED_CT_df = pd.merge(SNOMED_CT_df, semantic_types_group_df[['Code', 'Semantic
 
 # Uncomment below if you want to see the merged CUI dataframe with associated semantic types and groups attached
 # SNOMED_CT_df
+
+# Group by 'Code' and concatenate 'VASRD Code', 'Data Concept', 'CFR Criteria', and 'Keyword' by a semicolon if there are multiple entries for the same keyword
+SNOMED_CT_df = SNOMED_CT_df.groupby('Code').agg({
+    'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
+    'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
+    'CFR Criteria': lambda x: '; '.join(x.astype(str).unique()),
+    'Code Set': 'first',  # Retain 'Code Set' as it doesn't need concatenation
+    'Code Description': 'first',
+    'Keyword': lambda x: '; '.join(x.astype(str).unique()),
+    'Semantic Group': 'first',
+    'Semantic Type': 'first'
+}).reset_index()
 
 # Converts the SNOMED_CT CUI Codes from the chunk above into SNOMED_CT Codes
 cui_list = SNOMED_CT_df["Code"]
@@ -275,7 +287,7 @@ SNOMED_CT_trans_df = pd.DataFrame({
 # Uncomment out below if you want to see the transformed CUI to SNOMED-CT dataframe 
 # SNOMED_CT_trans_df
 
-# Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
+# Group by 'Code' and concatenate 'VASRD Code', 'Data Concept', 'CFR Criteria', and 'Keyword' by a semicolon if there are multiple entries for the same keyword
 SNOMED_CT_full_grouped = SNOMED_CT_trans_df.groupby('Code').agg({
     'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
     'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
