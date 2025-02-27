@@ -11,11 +11,7 @@ csv_file_input_name = 'Condition Keywords'
 
 # Imports
 import requests 
-import argparse
-import numpy as np
 import pandas as pd
-import json
-import os
 from json.decoder import JSONDecodeError
 version = 'current'
 base_uri = "https://uts-ws.nlm.nih.gov"
@@ -58,7 +54,7 @@ cfr_criteria_3 = []
 data_concept_3 = []
 keyword_value_3 = []
 
-for x in np.arange(0, len(string_list),1):
+for x in range(len(string_list)):
     string = str(string_list[x])
     DC_code = df["VASRD Code"][df['Keyword'] == string].to_list()[0]
     CFR_criteria = df['CFR Criteria'][df['Keyword'] == string].to_list()[0]
