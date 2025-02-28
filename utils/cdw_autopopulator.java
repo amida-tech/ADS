@@ -48,8 +48,9 @@ function conditionDictionary() {
       }
   }
   //Prints the dictionary
-  
-  //console.log(JSON.stringify(codeMap, null, 2));
+
+
+  //console.log(JSON.stringify(filteredCodeMap, null, 2));
 
 }  
 
@@ -76,8 +77,8 @@ Example of dictionary that will be created:
     "88293-6, Glomerular filtration rate/1.73 sq M.predicted.black:ArVRat:Pt:Ser/Plas/Bld:Qn:Creatinine-based formula (CKD-EPI)",
   ]
 }
-
 */
+
 function columnPopulator() {
     const ss = SpreadsheetApp.getActiveSpreadsheet();
     const sourceSheet = ss.getSheetByName("CFR to Code Set Mappings");
@@ -130,10 +131,15 @@ function columnPopulator() {
         const criteriaValue = cdwData[i][columnBIndex];
         if (!criteriaValue) continue; // Skip empty values
 
+        //console.log(`\nProcessing Criteria: ${criteriaValue}`); 
+
+
         //These sets are created below to make sure that there are no duplicate criteria + code set pairings
         let exactMatches = new Set();
         let partialMatches = new Set();
-        let regex = new RegExp(`(^|; )${criteriaValue}($|; )`, "i"); // Ensures whole-word matching in semicolon-separated lists
+        let regex = new RegExp(`(^|; )${criteriaValue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}($|; )`, "i"); // Ensures whole-word matching in semicolon-separated lists
+
+        
 
         // Look for exact and partial matches
         for (let j = 1; j < codeSetData.length; j++) {
@@ -141,15 +147,25 @@ function columnPopulator() {
             if (codeSetData[j][inCDWIndex] === "Yes") {
                 let codeSetValue = codeSetData[j][cfrIndexCodeSet];
 
+            
+
                 if (codeSetValue === criteriaValue) {
                     exactMatches.add(codeSetData[j][codeSetIndexCodeSet]); // Store exact matches
                 } 
-                
+
                 if (regex.test(codeSetValue)) {
+                    
                     partialMatches.add(codeSetData[j][codeSetIndexCodeSet]); // Store valid partial matches
+                    //console.log(`Partial match found! Criteria: "${criteriaValue}" matched "${codeSetValue}" -> Adding: ${codeSetData[j]//[codeSetIndexCodeSet]}`);
                 }
             }
         }
+
+           // Debugging: Print exact and partial matches before insertion
+        //console.log(`Exact Matches for "${criteriaValue}":`, [...exactMatches]);
+        //console.log(`Partial Matches for "${criteriaValue}":`, [...partialMatches]);
+
+
 
         // Insert unique exact matches
         for (let match of exactMatches) {
@@ -182,7 +198,7 @@ function columnPopulator() {
         }
     }
 
-  
+
     //const destinationSheet = ss.getSheetByName("CDW Data Locations");
     const data = destinationSheet.getDataRange().getValues(); // Get all sheet data
     //Conditional logic to fill in rest of the columns.. Feel Free to edit based on requirements
@@ -251,7 +267,7 @@ function columnPopulator() {
     rowsToDelete.forEach(row => destinationSheet.deleteRow(row));
 
 
-    
+
 
 }
 
@@ -290,8 +306,10 @@ function FieldValueExamplePopulator() {
         if (combinedCodeSet.toLowerCase().trim() === codeSetValue.toLowerCase().trim()) { // Ensure Code Set matches
             var criteriaParts = combinedCriteria.toLowerCase().trim().split("; "); // Normalize text and split multiple criteria
 
-            // Allow partial matching (e.g., "Minimum rating for kidney removal" should match "Minimum Rating for Kidney Removal")
-            if (criteriaParts.some(criterion => cfrValue.toLowerCase().trim().includes(criterion))) {
+            //prioritizes longer critera first. Using '===' in if statement below to ensure more precises matching. Used for bug fix 2/27.
+            criteriaParts.sort((a, b) => b.length - a.length);
+
+            if (criteriaParts.some(criterion => cfrValue.toLowerCase().trim() === criterion)) {
                 var randomIndex = Math.floor(Math.random() * codeMap[combinedKey].length);
                 selectedValue = codeMap[combinedKey][randomIndex];
                 break; // Stop at the first match found
@@ -339,10 +357,10 @@ function reOrganizingRows() {
   var data = sheet.getDataRange().getValues(); 
 
   if (data.length < 2) return; // Exit if no data
-  
+
   var header = data[0]; // Save the header row
   var rows = data.slice(1); // Get all rows except the header
-  
+
 
   // Feel free to set your own order for how you would like the codes to be organized per each criteria
   var sortOrder = {
