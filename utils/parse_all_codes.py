@@ -143,15 +143,6 @@ with open(output_directory, "w") as f:
 
 
 f.close()
-        
-      
-
-
-
-
-
-
-
 
  
  
