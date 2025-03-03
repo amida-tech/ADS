@@ -12,6 +12,7 @@ csv_file_input_name = 'Condition Keywords'
 # Imports
 import requests 
 import pandas as pd
+from json.decoder import JSONDecodeError
 version = 'current'
 base_uri = "https://uts-ws.nlm.nih.gov"
 
@@ -23,15 +24,12 @@ df = pd.read_csv('input/' + csv_file_input_name + '.csv')
 df = df[(df["Data Concept"] == "Diagnosis") | (df["Data Concept"] == "Symptom")]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
-df_combined = df.groupby('Keyword').agg({
+df = df.groupby('Keyword').agg({
     'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
     'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
     'CFR Criteria': lambda x: '; '.join(x.astype(str).unique()),
     'Code Set': 'first'  # Retain 'Code Set' as it doesn't need concatenation
 }).reset_index()
-
-# Display the resulting DataFrame
-df = df_combined
 
 # Extract the column as a Pandas Series
 column_series = df[column_name]
@@ -129,8 +127,8 @@ for x in range(len(string_list)):
 
             if len(items) == 0:
                 break
-
             count = len(items)
+
             # Use list comprehension to extend constant lists:
             keyword_value_2.extend([string] * count)
             dc_code_2.extend([DC_code] * count)
@@ -141,8 +139,9 @@ for x in range(len(string_list)):
             code_2.extend([item['ui'] for item in items])
             name_2.extend([item['name'] for item in items])
             vocab_type_2.extend([item['rootSource'] for item in items])
-    except Exception as except_error:
-        print(except_error)
+    except Exception as e:
+        print(f"Error processing keyword {string}: {e}")
+        continue  # Skip this CUI and continue with the next one
         
 icd_df = pd.DataFrame({"VASRD Code": dc_code_2, 
                        "Data Concept": data_concept_2,
@@ -255,16 +254,11 @@ for x in range(len(ICD10_code)):
             r = requests.get(base_uri+content_endpoint,params=query)
             r.encoding = 'utf-8'
             items  = r.json()
-
             if r.status_code != 200:
                 if pageNumber == 1:
-                    # print('No results found.'+'\n')
                     break
                 else:
                     break
-
-            # print("Results for page " + str(pageNumber)+"\n")
-
             decend_ICD_10_keyword_value.extend([string] * len(items["result"]))
             decend_ICD_10_VASRD_Code.extend([DC_code] * len(items["result"]))
             decend_ICD_10_CFR_criteria.extend([CFR_criteria] * len(items["result"]))
@@ -272,7 +266,6 @@ for x in range(len(ICD10_code)):
             decend_ICD10_values.extend([result["ui"] for result in items["result"]])
             decend_ICD10_names.extend([result["name"] for result in items["result"]])
             decend_ICD10_root.extend([result["rootSource"] for result in items["result"]])
-
     except Exception as except_error:
         print(except_error)
         
