@@ -234,7 +234,7 @@ for idx, cui in enumerate(cui_list):
     cfr_criteria = cfr_criteria_list[idx]
     data_concept = data_concept_list[idx]
     keyword_value = keyword_value_list[idx]
-    SEMANTIC_TYPE = semantic_type_list[idx]
+    semantic_type = semantic_type_list[idx]
     semantic_group = semantic_group_list[idx]
 
     PAGE = 0
@@ -269,7 +269,7 @@ for idx, cui in enumerate(cui_list):
             SNOMED_CT_DC_Code.extend([dc_code] * count)
             SNOMED_CT_CFR_criteria.extend([cfr_criteria] * count)
             SNOMED_CT_data_concept.extend([data_concept] * count)
-            SNOMED_CT_semantic_type.extend([SEMANTIC_TYPE] * count)
+            SNOMED_CT_semantic_type.extend([semantic_type] * count)
             SNOMED_CT_semantic_group.extend([semantic_group] * count)
 
             # For values coming from each item in results, use list
