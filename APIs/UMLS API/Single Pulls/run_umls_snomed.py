@@ -1,20 +1,18 @@
+# Imports
 from json.decoder import JSONDecodeError
 import requests
 import pandas as pd
 
 ## CHANGE INPUTS HERE ##
-
 API_KEY = 'YOUR API KEY HERE'
 
 # Output Excel Sheet Name
-CONDITION = "CONDITION NAME"
+CONDITION = 'CONDITION NAME'
 
 # Input Excel Sheet with Keywords Name
 CSV_FILE_INPUT_NAME = 'CONDITION KEYWORDS FILE NAME'
 
-## End of requested inputs ##
-
-# Imports
+## END OF REQUESTED INPUTS ##
 VERSION = 'current'
 BASE_URI = "https://uts-ws.nlm.nih.gov"
 
