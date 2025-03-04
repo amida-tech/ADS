@@ -7,20 +7,20 @@ import pandas as pd
 API_KEY = 'YOUR API KEY HERE'
 
 # Output Excel Sheet Name
-CONDITION = "Condition Name"
+CONDITION = 'CONDITION NAME'
 
 # Input Excel Sheet with Keywords Name
-csv_file_input_name = 'Condition Keywords'
+CSV_FILE_INPUT_NAME = 'CONDITION KEYWORDS FILE NAME'
 
 ## END OF REQUESTED INPUTS ##
-version = 'current'
-base_uri = "https://uts-ws.nlm.nih.gov"
+VERSION = 'current'
+BASE_URI = "https://uts-ws.nlm.nih.gov"
 
 # Keyword Column Name
-column_name = 'Keyword'
+COLUMN_NAME = 'Keyword'
 
 # Read the Excel file
-df = pd.read_csv('input/' + csv_file_input_name + '.csv')
+df = pd.read_csv('input/' + CSV_FILE_INPUT_NAME + '.csv')
 df = df[df["Data Concept"] == "Procedure"]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and
@@ -34,11 +34,8 @@ df = df.groupby('Keyword').agg({
 }).reset_index()
 
 # Extract the column as a Pandas Series
-string_list = df[column_name].tolist()
-
-# Now column_list contains the column data with the column name as the
-# first element
-print(string_list)
+string_list = df[COLUMN_NAME].tolist()
+# print(string_list)
 
 # Keep in mind this pulls the CUI code for UMLS
 # You will need to convert these CUI codes from UMLS codes into their
@@ -53,21 +50,21 @@ data_concept_3 = []
 keyword_value_3 = []
 
 for x in range(len(string_list)):
-    string = str(string_list[x])
-    DC_code = df["VASRD Code"][df['Keyword'] == string].to_list()[0]
-    CFR_criteria = df['CFR Criteria'][df['Keyword'] == string].to_list()[0]
-    data_concept = df['Data Concept'][df['Keyword'] == string].to_list()[0]
-    content_endpoint = "/rest/search/" + version
-    full_url = base_uri + content_endpoint
-    page = 0
+    STRING = str(string_list[x])
+    DC_code = df["VASRD Code"][df['Keyword'] == STRING].to_list()[0]
+    CFR_criteria = df['CFR Criteria'][df['Keyword'] == STRING].to_list()[0]
+    data_concept = df['Data Concept'][df['Keyword'] == STRING].to_list()[0]
+    CONTENT_ENDPOINT = "/rest/search/" + VERSION
+    FULL_URL = BASE_URI + CONTENT_ENDPOINT
+    PAGE = 0
 
     try:
         while True:
-            page += 1
-            query = {'string': string, 'apiKey': API_KEY, 'pageNumber': page}
+            PAGE += 1
+            query = {'string': STRING, 'apiKey': API_KEY, 'pageNumber': PAGE}
             query['includeObsolete'] = 'true'
             query['sabs'] = "CPT"
-            r = requests.get(full_url, params=query)
+            r = requests.get(FULL_URL, params=query)
             r.raise_for_status()
             r.encoding = 'utf-8'
             outputs = r.json()
@@ -75,13 +72,13 @@ for x in range(len(string_list)):
             items = (([outputs['result']])[0])['results']
 
             if len(items) == 0:
-                if page == 1:
+                if PAGE == 1:
                     break
                 else:
                     break
 
             # Using list comprehension to append data
-            keyword_value_3.extend([string] * len(items))
+            keyword_value_3.extend([STRING] * len(items))
             dc_code_3.extend([DC_code] * len(items))
             cfr_criteria_3.extend([CFR_criteria] * len(items))
             data_concept_3.extend([data_concept] * len(items))
@@ -90,7 +87,7 @@ for x in range(len(string_list)):
             vocab_type_3.extend([result['rootSource'] for result in items])
 
     except Exception as e:
-        print(f"Error processing keyword {string}: {e}")
+        print(f"Error processing keyword {STRING}: {e}")
         continue  # Skip this CUI and continue with the next one
 
 cpt_df = pd.DataFrame({"VASRD Code": dc_code_3,
@@ -120,7 +117,7 @@ cfr_criteria_list = cpt_df["CFR Criteria"]
 data_concept_list = cpt_df["Data Concept"]
 keyword_value_list = cpt_df["Keyword"]
 
-sabs = 'CPT'
+SABS = 'CPT'
 CPT_name = []
 CPT_code = []
 CPT_root = []
@@ -135,19 +132,19 @@ for idx, cui in enumerate(cui_list):
     data_concept = data_concept_list[idx]
     keyword_value = keyword_value_list[idx]
 
-    page = 0
+    PAGE = 0
 
     while True:
-        page += 1
-        path = '/search/' + version
+        PAGE += 1
+        PATH = '/search/' + VERSION
         query = {
             'apiKey': API_KEY,
             'string': cui,
-            'sabs': sabs,
+            'sabs': SABS,
             'returnIdType': 'code',
-            'pageNumber': page}
+            'pageNumber': PAGE}
         try:
-            output = requests.get(base_uri + path, params=query)
+            output = requests.get(BASE_URI + PATH, params=query)
             output.encoding = 'utf-8'
             outputJson = output.json()
             results = (([outputJson['result']])[0])['results']
@@ -185,34 +182,34 @@ decend_CPT_data_concept = []
 decend_CPT_keyword_value = []
 
 for x in range(len(CPT_code)):
-    source = 'CPT'
-    string = CPT_trans_df["Keyword"].to_list()[x]
-    DC_code = CPT_trans_df["VASRD Code"][CPT_trans_df['Keyword'] == string].to_list()[
+    SOURCE = 'CPT'
+    STRING = CPT_trans_df["Keyword"].to_list()[x]
+    DC_code = CPT_trans_df["VASRD Code"][CPT_trans_df['Keyword'] == STRING].to_list()[
         0]
-    CFR_criteria = CPT_trans_df['CFR Criteria'][CPT_trans_df['Keyword'] == string].to_list()[
+    CFR_criteria = CPT_trans_df['CFR Criteria'][CPT_trans_df['Keyword'] == STRING].to_list()[
         0]
-    data_concept = CPT_trans_df['Data Concept'][CPT_trans_df['Keyword'] == string].to_list()[
+    data_concept = CPT_trans_df['Data Concept'][CPT_trans_df['Keyword'] == STRING].to_list()[
         0]
-    identifier = str(CPT_code[x])
-    operation = 'children'
-    content_endpoint = "/rest/content/" + version + \
-        "/source/" + source + "/" + identifier + "/" + operation
+    IDENTIFIER = str(CPT_code[x])
+    OPERATION = 'children'
+    CONTENT_ENDPOINT = "/rest/content/" + VERSION + \
+        "/source/" + SOURCE + "/" + IDENTIFIER + "/" + OPERATION
 
-    pageNumber = 0
+    PAGE_NUMBER = 0
 
     try:
         while True:
-            pageNumber += 1
-            query = {'apiKey': API_KEY, 'pageNumber': pageNumber}
-            r = requests.get(base_uri + content_endpoint, params=query)
+            PAGE_NUMBER += 1
+            query = {'apiKey': API_KEY, 'pageNumber': PAGE_NUMBER}
+            r = requests.get(BASE_URI + CONTENT_ENDPOINT, params=query)
             r.encoding = 'utf-8'
             items = r.json()
             if r.status_code != 200:
-                if pageNumber == 1:
+                if PAGE_NUMBER == 1:
                     break
                 else:
                     break
-            decend_CPT_keyword_value.extend([string] * len(items["result"]))
+            decend_CPT_keyword_value.extend([STRING] * len(items["result"]))
             decend_CPT_VASRD_Code.extend([DC_code] * len(items["result"]))
             decend_CPT_CFR_criteria.extend(
                 [CFR_criteria] * len(items["result"]))
@@ -262,9 +259,9 @@ CPT_full_grouped = CPT_full_grouped.reindex(
     axis=1)
 
 # Save file
-outpath = 'output/'
-file_name = f"{CONDITION}_cpt_codes.xlsx"
-CPT_full_grouped.to_excel(outpath + file_name)
+OUTPATH = 'output/'
+FILE_NAME = f"{CONDITION}_cpt_codes.xlsx"
+CPT_full_grouped.to_excel(OUTPATH + FILE_NAME)
 
 # Print a message indicating where the file is saved
-print(f"Excel file '{file_name}' saved in the output folder.")
+print(f"Excel file '{FILE_NAME}' saved in the output folder.")
