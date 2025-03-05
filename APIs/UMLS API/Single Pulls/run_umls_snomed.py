@@ -24,15 +24,12 @@ df = pd.read_csv('input/' + CSV_FILE_INPUT_NAME + '.csv')
 df = df[df["Data Concept"] != "Medication"]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
-df_combined = df.groupby('Keyword').agg({
+df = df.groupby('Keyword').agg({
     'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
     'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
     'CFR Criteria': lambda x: '; '.join(x.astype(str).unique()),
     'Code Set': 'first'  # Retain 'Code Set' as it doesn't need concatenation
 }).reset_index()
-
-# Display the resulting DataFrame
-df = df_combined
 
 # Extract the column as a Pandas Series to list
 string_list = df[COLUMN_NAME].tolist()

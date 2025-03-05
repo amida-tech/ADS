@@ -172,7 +172,7 @@ CPT_trans_df = pd.DataFrame({"VASRD Code": CPT_DC_Code,
                              "Code Description": CPT_name,
                              "Keyword": CPT_keyword})
 
-# Get Decendents of ICD10
+# Get Decendents of CPT
 decend_CPT_names = []
 decend_CPT_values = []
 decend_CPT_root = []
