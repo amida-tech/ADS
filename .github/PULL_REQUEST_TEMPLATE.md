@@ -22,6 +22,8 @@
 ## Definition of Done Checklist
 
 - [ ] Code follows the project's coding style guidelines
+- [ ] Linting complete (Pylint score: 10/10)
+- [ ] Any disabled linting rules are explained in the description
 - [ ] Relevant documentation has been updated
 - [ ] Tests have been written and passed
 - [ ] No console errors or warnings

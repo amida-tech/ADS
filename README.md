@@ -37,13 +37,15 @@ MCP-ADS (Modern Claims Processing - Automated Decision Support) is a collection 
    autopep8 --in-place --aggressive your_file.py
    ``` 
 
+- For style guidelines, follow the [Google Python Style Guide](https://google.github.io/styleguide/pyguide.html)
+
 ## Project Structure
 ```
 MCP-ADS/
 │-- APIs/           # Scripts to pull medical codes from UMLS and OpenFDA
 │-- GEMS/           # Scripts to convert ICD-10 codes to ICD-9 codes
 │-- Notebooks/      # Practice notebooks for working with UMLS API
-│-- UTILS/          # Utility scripts for CDW code validation and parsing data for SQL queries
+│-- utils/          # Utility scripts for CDW code validation and parsing data for SQL queries
 │-- requirements.txt # Dependencies
 │-- README.md       # Project documentation
 ```
@@ -61,7 +63,7 @@ Scripts to pull medical codes from:
 ### **Notebooks**
 - Jupyter notebooks that demonstrate how to interact with the **UMLS API** and return medical codes
 
-### **UTILS**
+### **utils**
 - Scripts for:
   - Checking if medical codes exist in **CDW**
   - Auto-populating **CDW Data Locations**
