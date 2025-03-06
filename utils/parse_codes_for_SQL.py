@@ -8,10 +8,10 @@ This script is a modified version of parse_all_codes.py but includes:
 
 import pandas as pd
 
-NAME_OF_CODE_SET = "foo"  # Enter name of condition(Arrythmias, GI Cancer etc.)
-FILE_NAME = "example_codes"  # Enter file name stored in input folder
+NAME_OF_CODE_SET = ""  # Enter name of condition(Arrythmias, GI Cancer etc.)
+FILE_NAME = ""  # Enter file name stored in input folder
 
-MAX_LENGTH = 128  # Max length for SQL query variables
+MAX_LENGTH = 100  # Max length for SQL query variables
 
 INPUT_DIRECTORY = f"codeset/input/{FILE_NAME}.xlsx"
 OUTPUT_DIRECTORY = f"codeset/output/{NAME_OF_CODE_SET}.txt"
