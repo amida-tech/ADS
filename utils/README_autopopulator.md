@@ -23,8 +23,8 @@ The CDW Data Locations tab should populate itself. Please double check that all 
 
 ## Notes/Warnings/Tips
 - If there is any DATETIME criteria, the user will need to add this in manually. For examples of  DATETIME criteria, please take a look at some of our previous conditions such as Pleuritis, Thrombo or even GI Cancer. 
-- there are console log statements commented throughout the script. The user can use these to troubleshoot if there are any issues. 
-- in the wrapper function, the user can comment out functions as they choose. The snomedFormatter function formats the SnomedCodes so that only the code value shows up in the Field Value Example column. Commenting this function out will keep it formatted like all the other codes
-- the reOrganizingRows function() ensures that the order of code types (CPT, LOINC ICD-10 etc.) are ordered the same for each specific criteria in the CDW Data Locations tab. If you don't want these ordered, you can comment this function out, OR change the order of how the codes should up by modifying the function itself. This can be done by finding the sortOrder variable with Ctrl + F and modifying the dictionary values. 
-- use the Execution Log to identify potential bugs or areas where the script is getting stuck 
+- There are console log statements commented throughout the script. The user can use these to troubleshoot if there are any issues. 
+- In the wrapper function, the user can comment out functions as they choose. The snomedFormatter function formats the SnomedCodes so that only the code value shows up in the Field Value Example column. Commenting this function out will keep it formatted like all the other codes
+- The reOrganizingRows function() ensures that the order of code types (CPT, LOINC ICD-10 etc.) are ordered the same for each specific criteria in the CDW Data Locations tab. If you don't want these ordered, you can comment this function out, OR change the order of how the codes should up by modifying the function itself. This can be done by finding the sortOrder variable with Ctrl + F and modifying the dictionary values. 
+- Use the Execution Log to identify potential bugs or areas where the script is getting stuck 
 

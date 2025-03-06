@@ -234,7 +234,7 @@ function columnPopulator() {
             columnFValue = "CPTCode, CPTName"
 
         } else if (columnDValue === 'NDC') {
-            columnCValue = "NDC medication code"
+            columnCValue = "Medication NDC Code"
             columnEValue = "Dim.NationalDrug"
             columnFValue = "DrugNameWithDose"
 
