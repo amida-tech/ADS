@@ -8,8 +8,10 @@ This script is a modified version of parse_all_codes.py but includes:
 
 import pandas as pd
 
-NAME_OF_CODE_SET = ""  # Enter name of condition(Arrythmias, GI Cancer etc.)
-FILE_NAME = ""  # Enter file name stored in input folder
+NAME_OF_CODE_SET = "foo"  # Enter name of condition(Arrythmias, GI Cancer etc.)
+FILE_NAME = "example_codes"  # Enter file name stored in input folder
+
+MAX_LENGTH = 128  # Max length for SQL query variables
 
 INPUT_DIRECTORY = f"codeset/input/{FILE_NAME}.xlsx"
 OUTPUT_DIRECTORY = f"codeset/output/{NAME_OF_CODE_SET}.txt"
@@ -40,7 +42,8 @@ for unique_val in top_dicts:
 # creating tuples of Code Set and Code(NDC, CPT, ICD-9, IDC-10)
 df['Tuple'] = list(zip(df['Code Set'], df["Code"]))
 
-# Making dictionary: Key = CFR Criteria and Value = tuple of Code Set + Code combo
+# Making dictionary: Key = CFR Criteria and Value = tuple of Code Set +
+# Code combo
 main = (df.groupby('CFR Criteria')['Tuple'].apply(list).to_dict())
 
 # Code below sourced from a website to convert CFR Criteria to camelCase
@@ -48,7 +51,7 @@ main = {
     ''.join(
         word.title() if i else word for i,
         word in enumerate(
-            k.split(' '))): v for k,
+            k.replace("'", "").split(' '))): v for k,
     v in main.items()}
 
 for key in list(main.keys()):
@@ -68,6 +71,8 @@ for key in list(main.keys()):
                             ":",
         "")
 
+    new_key = new_key[:MAX_LENGTH]  # truncate if too long
+
     if new_key != key:
         main[new_key] = main.pop(key)
 
@@ -75,13 +80,14 @@ for key in list(main.keys()):
 # creating tuples of Code Set and Code(Keyword)
 df['Tuple_part_2'] = list(zip(df['Code Set'], df["Code Description"]))
 
-keyword_dict = (df.groupby('CFR Criteria')['Tuple_part_2'].apply(list).to_dict())
+keyword_dict = (df.groupby('CFR Criteria')[
+                'Tuple_part_2'].apply(list).to_dict())
 # Code below sourced from a website to convert CFR Criteria to camelCase
 keyword_dict = {
     ''.join(
         word.title() if i else word for i,
         word in enumerate(
-            k.split(' '))): v for k,
+            k.replace("'", "").split(' '))): v for k,
     v in keyword_dict.items()}
 
 for key in list(keyword_dict.keys()):
@@ -100,6 +106,7 @@ for key in list(keyword_dict.keys()):
                         "").replace(
                             ":",
         "")
+    new_key = new_key[:MAX_LENGTH]  # Truncate if too long
 
     if new_key != key:
         keyword_dict[new_key] = keyword_dict.pop(key)
@@ -127,7 +134,7 @@ with open(OUTPUT_DIRECTORY, "w", encoding="utf-8") as f:
         for code_type, code in v:
             if code_type == "ICD-10":
                 icd_10_appender.append(str(code))
-        icd_10 = f"Declare @{k}_ICD10 AS VARCHAR(MAX) = ('{','.join(icd_10_appender)}')" # pylint: disable=invalid-name
+        icd_10 = f"Declare @{k}_ICD10 AS VARCHAR(MAX) = ('{ ','.join(icd_10_appender)}')" # pylint: disable=invalid-name
 
         if len(icd_10_appender) > 0:
             f.write(f"{icd_10} \n")
@@ -140,7 +147,7 @@ with open(OUTPUT_DIRECTORY, "w", encoding="utf-8") as f:
         for code_type, code in v:
             if code_type == "CPT":
                 cpt_appender.append(str(code))
-        cpt = f"Declare @{k}_cptcodes AS VARCHAR(MAX) = ('{','.join(cpt_appender)}')" # pylint: disable=invalid-name
+        cpt = f"Declare @{k}_cptcodes AS VARCHAR(MAX) = ('{','.join(cpt_appender)}')"  # pylint: disable=invalid-name
 
         if len(cpt_appender) > 0:
             f.write(f"{cpt} \n")
@@ -153,7 +160,7 @@ with open(OUTPUT_DIRECTORY, "w", encoding="utf-8") as f:
         for code_type, code in v:
             if code_type == "ICD-9":
                 icd_9_appender.append(str(code))
-        icd_9 = f"Declare @{k}_ICD9 AS VARCHAR(MAX) = ('{','.join(icd_9_appender)}')" # pylint: disable=invalid-name
+        icd_9 = f"Declare @{k}_ICD9 AS VARCHAR(MAX) = ('{','.join(icd_9_appender)}')"  # pylint: disable=invalid-name
 
         if len(icd_9_appender) > 0:
             f.write(f"{icd_9} \n")
@@ -178,7 +185,7 @@ with open(OUTPUT_DIRECTORY, "w", encoding="utf-8") as f:
         for code_type, code in v:
             if code_type == "SNOMED-CT":
                 snomed_appender.append(str(code))
-        snomed = f"Declare @{k}_SNOMEDCodes AS VARCHAR(MAX) = ('{','.join(snomed_appender)}')" # pylint: disable=invalid-name
+        snomed = f"Declare @{k}_SNOMEDCodes AS VARCHAR(MAX) = ('{','.join(snomed_appender)}')"  # pylint: disable=invalid-name
 
         if len(snomed_appender) > 0:
             f.write(f"{snomed} \n")
@@ -191,7 +198,7 @@ with open(OUTPUT_DIRECTORY, "w", encoding="utf-8") as f:
         for code_type, code in v:
             if code_type == "Keyword":
                 keyword_appender.append(f"%{str(code)}%")
-        keyword = f"Declare @{k}_keywords = ('{','.join(keyword_appender)}')" # pylint: disable=invalid-name
+        keyword = f"Declare @{k}_keywords = ('{','.join(keyword_appender)}')"  # pylint: disable=invalid-name
 
         if len(keyword_appender) > 0:
             f.write(f"{keyword} \n")

@@ -53,9 +53,10 @@ MCP-ADS/
 ## Components
 ### **APIs**
 Scripts to pull medical codes from:
-- **UMLS**: Retrieves ICD-10, CPT, RxNorm, and LOINC codes
+- **UMLS**: Retrieves ICD-10, SNOMED-CT, CPT, RxNorm, and LOINC codes
 - **OpenFDA**: Retrieves NDC codes
-- *Requires API keys* – Refer to the individual README in the `APIs/` directory for setup instructions.
+
+*Note:* Both sets of scripts require API keys. Refer to the individual READMEs in the `APIs/` directory for setup instructions.
 
 ### **GEMS**
 - Scripts for mapping **ICD-10** codes to **ICD-9** codes using General Equivalence Mappings (GEMs).
