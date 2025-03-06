@@ -12,14 +12,12 @@ CONDITION = 'CONDITION NAME'
 # Input Excel Sheet with Keywords Name
 CSV_FILE_INPUT_NAME = 'CONDITION KEYWORDS FILE NAME'
 
-## End of Requested Inputs ##
+## END OF REQUESTED INPUTS ##
 VERSION = 'current'
 BASE_URI = "https://uts-ws.nlm.nih.gov"
 
 # Keyword Column Name
 COLUMN_NAME = 'Keyword'
-
-## End of Requested Inputs ##
 
 # Read the Excel file
 df = pd.read_csv('input/' + CSV_FILE_INPUT_NAME + '.csv')

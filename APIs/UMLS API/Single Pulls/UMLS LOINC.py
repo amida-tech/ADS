@@ -10,12 +10,10 @@ excel_file_input_name = 'Finger Keywords'
 ## End of Requested Inputs ##
 
 # Imports
+from json.decoder import JSONDecodeError
 import requests 
-import argparse
 import numpy as np
 import pandas as pd
-import os
-from json.decoder import JSONDecodeError
 version = 'current'
 
 # Keyword Column Name
@@ -24,7 +22,7 @@ column_name = 'Keyword'
 
 # Read the Excel file
 df = pd.read_excel('input/' + excel_file_input_name + '.xlsx')
-df = df[df["Code Set"] == "LOINC"]
+df = df[df["Data Concept"] == "Lab"]
 
 # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
 df_combined = df.groupby('Keyword').agg({
