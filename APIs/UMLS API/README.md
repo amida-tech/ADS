@@ -1,35 +1,23 @@
 # UMLS API Folder
-Make sure you have an account active with [UMLS](https://uts.nlm.nih.gov/uts/umls/home) and a [UMLS API Key](https://uts.nlm.nih.gov/uts/profile) before running these scripts. 
+## Script Purpose
+These scripts query the UMLS API using a list of keywords and returns medical codes related to the ingested keywords. 
 
-Many of these scripts are very thorough and will frequently return more codes than required. Some codes returned may not be directly relevant to the diagnosis. It is recommended that the analyst reviews the data returned for accuracy concerning their specific diagnosis.
+## How to Use:
+1) Create an [UMLS](https://uts.nlm.nih.gov/uts/umls/home) and obtain your [UMLS API Key](https://uts.nlm.nih.gov/uts/profile) before running these scripts.
+2) Navigate inside of the `Single Pulls` folder & download the python file that matches the medical code you are trying to pull (ex: CPT, ICD10, LOINC, RxNorm, SNOMED-CT) 
+3) Put your Condition's keyword CSV file in the `inputs` folder.  This file should follow the [Keyword Template](https://docs.google.com/spreadsheets/d/1_RapZeT2gHfZQERkFxnjQZEbvCiMd5hNdy9sqATFvNw/edit?gid=0#gid=0) structure.
+4) Update the API_KEY, CONDITION, and CSV_FILE_INPUT_NAME variables at the top of the script with the requested information. 
+4) Run the script.  A new file will be generated in the `output` folder with the medical code type appended to the condition (i.e "arrythmia" + "_icd10_codes")
 
-All scripts output can be found in the "output" folder, located in the API folder. 
+## Understanding Results
+- A new Excel file will be created titled based on the CONDITION variable and the medical code script you are running.  For example, the run_umls_cpt.py file will output a file titled varicose_veins_cpt_codes if CONDITION = 'varicose_veins'.
+- The outputted file will have a list of your chosen medical codes, their code description, the keyword prompting that result.  The outputted file will also have the corresponding VASRD Code, CFR criteria, and Data Concept related to the returned medical code.   
 
-## File Descriptions
-- UMLS SNOMED, ICD10, CPT, and LOINC Decendant and Children Pull
-    - Returns the SNOMEDCT_US, ICD10, CPT, and LOINC codes associated with an inputted list of strings
-    - Checks children of the inputted list of strings
-- UMLS SNOMED, ICD10, CPT, and LOINC Quick Pull
-    - Returns the SNOMEDCT_US, ICD10, CPT, and LOINC codes associated with an inputted list of strings
-    - Does **not** check children of the inputted list of strings
+## Inputs
+- Your Condition's keyword CSV file in the `inputs` folder.  This file should follow the [Keyword Template](https://docs.google.com/spreadsheets/d/1_RapZeT2gHfZQERkFxnjQZEbvCiMd5hNdy9sqATFvNw/edit?gid=0#gid=0) structure.
 
-## Single Pulls File Descriptions, Notes and Limitations
-### UMLS CPT
-- This document will pull all the CPT given parent concept(s), the parent concept(s) children, and export them as an excel file.
-- In order to ensure that all desired CPT codes are returned, the type of procedure associated with the diagnosis must be included in the string_list variable search. 
-### UMLS ICD10
-- This document will pull all the SNOMEDCT_US given parent concept(s), the parent concept(s) children, and export them as an excel file.
-### UMLS LOINC
-- This document will pull all the LOINC given parent concept(s), the parent concept(s) children, and export them as an excel file.
-- The variable "string_list" should contain relevant lab tests (like PFTs), as opposed to the diagnosis of the associated concept.
-- LOINC is abbreviated as LNC in UMLS
-### UMLS RxNorm
-- This document will pull all RxNorm codes of the given generic or name brand medication that are available to UMLS and export them as an excel file. 
-- It is recommended that the generic brand of drugs are included in the search to increase the quality of the data returned
-- Depending on the length of the string_list variable, this script can take up to 20 minutes to run.  This is normal.  Leave the script running and come back to it later.  If the script's run time exceeds 30 minutes, try running two or more smaller queries (remember to change the Excel_Sheet_Name variable to avoid overwriting your previous output). 
-- The RxNorm code for some name brands may not be returned, but their medications will be returned. 
-    - Example Returns: 14 ACTUAT Arnuity 0.2 MG/ACTUAT Dry Powder Inhaler, but won't return the RxNorm code for just Arnuity
-- It is recommended to include variations of the medication.
-    - Ex: if you want to search for Advair, include "Advair", "Advair Diskus", "Advair HFA"
-### UMLS SNOMED-CT
-- This document will pull all the SNOMEDCT_US given parent concept(s), the parent concept(s) children, and export them as an excel file.
+## Outputs
+- Excel file containing the following columns: 'VASRD Code', 'CFR Criteria', 'Code', 'Code Description', 'Keyword', and 'Data Concept'
+
+## Warnings/Discrepancies 
+- Read `Python Script Troubleshooting` documentation located in this folder for more information on commonly returned errors and troubleshooting steps. 
