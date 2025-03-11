@@ -1,7 +1,7 @@
 """
-This script processes RxNorm codes and returns the code's [may_treat](https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html) relation.
+This script processes RxNorm codes and returns the code's [may_treat](https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html) relation. # pylint: disable=line-too-long
 The required input is an excel file with two columns: "Code Value" and "Code Description"
-The output is a structured excel file titled 'may_treat_results' with three columns: "Code Value",  "Code Description", "May Treat".
+The output is a structured excel file titled 'may_treat_results' with three columns: "Code Value",  "Code Description", "May Treat". # pylint: disable=line-too-long
 """
 
 import time

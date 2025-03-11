@@ -1,7 +1,7 @@
 """
 This script processes RxNorm codes and returns the code's Veteran Administration Class.
 The required input is an excel file with two columns: "Code Value" and "Code Description"
-The output is a structured excel file titled 'va_class_results' with three columns: "Code Value",  "Code Description", "VA Class".
+The output is a structured excel file titled 'va_class_results' with three columns: "Code Value",  "Code Description", "VA Class". # pylint: disable=line-too-long
 """
 
 import time

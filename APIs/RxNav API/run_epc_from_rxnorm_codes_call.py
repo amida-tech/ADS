@@ -1,7 +1,7 @@
 """
-This script processes RxNorm codes and returns the code's Established Pharmacologic Class (EPC).
+This script processes RxNorm codes and returns the code's Established Pharmacologic Class (EPC). # pylint: disable=line-too-long
 The required input is an excel file with two columns: "Code Value" and "Code Description"
-The output is a structured excel file titled 'epc_class_results' with three columns: "Code Value",  "Code Description", "EPC".
+The output is a structured excel file titled 'epc_class_results' with three columns: "Code Value",  "Code Description", "EPC". # pylint: disable=line-too-long
 """
 
 import time

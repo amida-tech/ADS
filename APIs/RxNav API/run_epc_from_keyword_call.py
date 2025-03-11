@@ -1,7 +1,7 @@
 """
-This script processes a string of medication names and returns the code's Established Pharmacologic Class (EPC).
+This script processes a string of medication names and returns the code's Established Pharmacologic Class (EPC). # pylint: disable=line-too-long
 The required input is an excel file with the first column: "Keywords"
-The output is a structured excel file titled 'drug_epc_results' with two columns: "Drug Name" and "RxNorm API EPC"
+The output is a structured excel file titled 'drug_epc_results' with two columns: "Drug Name" and "RxNorm API EPC" # pylint: disable=line-too-long
 """
 import time
 import requests  # pylint: disable=import-error

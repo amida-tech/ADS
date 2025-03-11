@@ -1,7 +1,7 @@
 """
-This script processes RxNorm codes and returns the code's Anatomical Therapeutic Chemical (ATC) Classification.
+This script processes RxNorm codes and returns the code's Anatomical Therapeutic Chemical (ATC) Classification. # pylint: disable=line-too-long
 The required input is an excel file with two columns: "Code Value" and "Code Description"
-The output is a structured excel file titled 'atc1_4_class_results' with three columns: "Code Value",  "Code Description", "ATC1-4".
+The output is a structured excel file titled 'atc1_4_class_results' with three columns: "Code Value",  "Code Description", "ATC1-4". # pylint: disable=line-too-long
 """
 
 import time
