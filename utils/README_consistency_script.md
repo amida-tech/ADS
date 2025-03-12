@@ -61,12 +61,13 @@ The Code Set Details and CFR to Code Set Mappings tab should be cleaned. Please 
 - Any google sheet condition file with sheets named 'CFR to Code Set Mappings' and 'Code Set Details', ideally complete or next to complete.
 
 ## Outputs
-✅ A cleaned and sorted VARSD code column in both Code Set Details and 'CFR to Code Set Mappings'
-✅ A cleaned and sorted criteria column in 'Code Set Details'
-✅ A populated relevant code set column
-✅ Sorted ICD-10, ICD-9, LOINC, RxNorm, CPT, and NDC codes
-✅ Multiple criteria matching with VARSD codes in 'Code Set Details'
-✅ Highlighted scientific notation codes
+
+    ✅ A cleaned and sorted VARSD code column in both Code Set Details and 'CFR to Code Set Mappings'
+    ✅ A cleaned and sorted criteria column in 'Code Set Details'
+    ✅ A populated relevant code set column
+    ✅ Sorted ICD-10, ICD-9, LOINC, RxNorm, CPT, and NDC codes
+    ✅ Multiple criteria matching with VARSD codes in 'Code Set Details'
+    ✅ Highlighted scientific notation codes
 
 
 ## Other Notes/Warnings/Tips
