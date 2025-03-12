@@ -17,8 +17,8 @@ The script automates a few tasks and ensures consistency after the code set comp
 1) Ensure that you have two sheets named 'CFR to Code Set Mappings' and 'Code Set Details'
 2) Ensure that you have two columns named 'VARSD Code' and 'CFR Criteria' (column A and B respectively) in both sheets. 
 3) Please only use parentheses/commas/dashes and not semicolons/colons/slashes to *describe* criteria. Criteria will not be split correctly otherwise.
-Ex: 
-    	Systemic Therapy: Corticosteroids  - ❌
+
+        Systemic Therapy: Corticosteroids  - ❌
 	    Systemic Therapy/ Corticosteroids  - ❌ 
 	    Systemic Therapy; Corticosteroids  - ❌
 	    Systemic Therapy(Corticosteroids)  - ✅ 
