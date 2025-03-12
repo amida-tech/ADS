@@ -1,4 +1,4 @@
-# CDW AUTOPOPULATOR INSTRUCTIONS
+# CONSISTENCY SCRIPT INSTRUCTIONS
 
 ## Script Purpose
 The script automates a few tasks and ensures consistency after the code set compilation of a condition is complete. 
