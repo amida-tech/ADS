@@ -1,7 +1,14 @@
+"""
+This script ingests a CSV file of condition keywords and
+returns and Excel file of RxNorm codes that are associated with the inputted keywords
+Resources:
+- [Keywords template](https://docs.google.com/spreadsheets/d/1_RapZeT2gHfZQERkFxnjQZEbvCiMd5hNdy9sqATFvNw/edit?gid=0#gid=0) # pylint: disable=line-too-long
+"""
+
 # Imports
 from json.decoder import JSONDecodeError
-import requests
-import pandas as pd
+import requests  # pylint: disable=import-error
+import pandas as pd  # pylint: disable=import-error
 
 ## CHANGE INPUTS HERE ##
 API_KEY = 'YOUR API KEY HERE'
@@ -23,7 +30,8 @@ COLUMN_NAME = 'Keyword'
 df = pd.read_csv('input/' + CSV_FILE_INPUT_NAME + '.csv')
 df = df[df["Data Concept"] != "Medication"]
 
-# Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
+# Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and
+# 'CFR Criteria' by a semicolon if there are multiple entries for the same keyword
 df = df.groupby('Keyword').agg({
     'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
     'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
@@ -47,7 +55,7 @@ cfr_criteria_3 = []
 data_concept_3 = []
 keyword_value_3 = []
 
-for x in range(len(string_list)):
+for x in range(len(string_list)):  # pylint: disable=consider-using-enumerate
     STRING = str(string_list[x])
     DC_code = df["VASRD Code"][df['Keyword'] == STRING].to_list()[0]
     CFR_criteria = df['CFR Criteria'][df['Keyword'] == STRING].to_list()[0]
@@ -70,11 +78,7 @@ for x in range(len(string_list)):
             items = (([outputs['result']])[0])['results']
 
             if len(items) == 0:
-                if PAGE == 1:
-                    # print('No results found.'+'\n')
-                    break
-                else:
-                    break
+                break
 
             keyword_value_3.extend([STRING for _ in items])
             dc_code_3.extend([DC_code for _ in items])
@@ -84,7 +88,7 @@ for x in range(len(string_list)):
             name_3.extend([result['name'] for result in items])
             vocab_type_3.extend([result['rootSource'] for result in items])
 
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         print(f"Error processing keyword {STRING}: {e}")
         continue  # Skip this CUI and continue with the next one
 
@@ -128,7 +132,7 @@ for cui in cui_list:
         response.encoding = "utf-8"
         response.raise_for_status()  # raise an error for non-200 responses
         json_data = response.json()
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         print(f"Error processing Semantic Type for CUI {cui}: {e}")
         continue  # Skip this CUI and continue with the next one
 
@@ -152,7 +156,8 @@ for cui in cui_list:
 # Create a DataFrame from the results
 semantic_types_df = pd.DataFrame(results_list)
 
-# Uncomment below if you want to see the dataframe for the CUI codes, Semantic types, and Semantic Group URI
+# Uncomment below if you want to see the dataframe for the
+# CUI codes, Semantic types, and Semantic Group URI
 # semantic_types_df
 
 # Find Semantic Group
@@ -184,7 +189,7 @@ for idx, row in semantic_types_df.iterrows():
         print(
             f"JSONDecodeError for Semantic Group (URI: {sem_uri}). Skipping this entry.")
         semantic_group_list.append("Error")
-    except Exception as e:
+    except Exception as e:  # pylint: disable=broad-exception-caught
         print(f"Error processing Semantic Group URI for {sem_uri}: {e}")
         semantic_group_list.append("Error")
 
@@ -194,14 +199,20 @@ semantic_types_df["Semantic Group"] = semantic_group_list
 semantic_types_group_df = semantic_types_df.drop("Semantic Group URI", axis='columns').reindex([
     "Code", "Semantic Group", "Semantic Type"], axis=1)
 
-# Uncomment below if you want to see a dataframe of the CUI code and it's corresponding Semantic Group and Semantic Type
+# Uncomment below if you want to see a dataframe of the
+# CUI code and it's corresponding Semantic Group and Semantic Type
 # semantic_types_group_df
 
-# Merge above DF with original DF and update all below chunks accordingly
+# Merge above DF with original DF and
+# update all below chunks accordingly
 SNOMED_CT_df = pd.merge(SNOMED_CT_df, semantic_types_group_df[[
-                        'Code', 'Semantic Group', 'Semantic Type']], on='Code', how='left')
+                        'Code',
+                        'Semantic Group',
+                        'Semantic Type']],
+                        on='Code', how='left')
 
-# Uncomment below if you want to see the merged CUI dataframe with associated semantic types and groups attached
+# Uncomment below if you want to see the merged
+# CUI dataframe with associated semantic types and groups attached
 # SNOMED_CT_df
 
 # Converts the SNOMED_CT CUI Codes from the chunk above into SNOMED_CT Codes
@@ -252,10 +263,7 @@ for idx, cui in enumerate(cui_list):
             results = (([outputJson['result']])[0])['results']
 
             if len(results) == 0:
-                if PAGE == 1:
-                    break
-                else:
-                    break
+                break
 
             # Extend the lists with constant values repeated for each item in
             # results
@@ -275,7 +283,8 @@ for idx, cui in enumerate(cui_list):
 
         except JSONDecodeError:
             print(
-                f"JSONDecodeError encountered in SNOMED-CT pull for CUI: {cui}. Skipping this entry.")
+                f"JSONDecodeError encountered in SNOMED-CT pull for CUI: {cui}. Skipping this entry"
+                )
             break  # Exit the while loop for this `cui` and proceed to the next one
 
 SNOMED_CT_trans_df = pd.DataFrame({

@@ -1,7 +1,14 @@
+"""
+This script ingests a CSV file of condition lab keywords and 
+returns and Excel file of LOINC codes that are associated with the inputted keywords
+Resources: 
+- [Keywords template](https://docs.google.com/spreadsheets/d/1_RapZeT2gHfZQERkFxnjQZEbvCiMd5hNdy9sqATFvNw/edit?gid=0#gid=0) # pylint: disable=line-too-long
+"""
+
 # Imports
 from json.decoder import JSONDecodeError
-import requests
-import pandas as pd
+import requests # pylint: disable=import-error
+import pandas as pd # pylint: disable=import-error
 
 ## CHANGE INPUTS HERE ##
 API_KEY = 'YOUR API KEY HERE'
@@ -52,7 +59,7 @@ cfr_criteria_4 = []
 data_concept_4 = []
 keyword_value_4 = []
 
-for x in range(len(string_list)):
+for x in range(len(string_list)): # pylint: disable=consider-using-enumerate
     STRING = str(string_list[x])
     DC_code = df["VASRD Code"][df['Keyword'] == STRING].to_list()[0]
     CFR_criteria = df['CFR Criteria'][df['Keyword'] == STRING].to_list()[0]
@@ -75,10 +82,7 @@ for x in range(len(string_list)):
             items = (([outputs['result']])[0])['results']
 
             if len(items) == 0:
-                if PAGE == 1:
-                    break
-                else:
-                    break
+                break
 
             # Using list comprehension to append data
             keyword_value_4.extend([STRING] * len(items))
@@ -89,7 +93,7 @@ for x in range(len(string_list)):
             name_4.extend([result['name'] for result in items])
             vocab_type_4.extend([result['rootSource'] for result in items])
 
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-exception-caught
         print(f"Error processing keyword {STRING}: {e}")
         continue  # Skip this CUI and continue with the next one
 
@@ -174,7 +178,7 @@ LOINC_trans_df = pd.DataFrame({"VASRD Code": LOINC_DC_Code,
                                "Code Description": LOINC_name,
                                "Keyword": LOINC_keyword})
 
-# Get Children of CPT
+# Get Children of LOINC
 decend_LOINC_names = []
 decend_LOINC_values = []
 decend_LOINC_root = []
@@ -183,7 +187,7 @@ decend_LOINC_CFR_criteria = []
 decend_LOINC_data_concept = []
 decend_LOINC_keyword_value = []
 
-for x in range(len(LOINC_code)):
+for x in range(len(LOINC_code)): # pylint: disable=consider-using-enumerate
     SOURCE = 'LNC'
     STRING = LOINC_trans_df["Keyword"].to_list()[x]
     DC_code = LOINC_trans_df["VASRD Code"][LOINC_trans_df['Keyword'] == STRING].to_list()[
@@ -207,10 +211,7 @@ for x in range(len(LOINC_code)):
             r.encoding = 'utf-8'
             items = r.json()
             if r.status_code != 200:
-                if PAGE_NUMBER == 1:
-                    break
-                else:
-                    break
+                break
             decend_LOINC_keyword_value.extend([STRING] * len(items["result"]))
             decend_LOINC_DC_Code.extend([DC_code] * len(items["result"]))
             decend_LOINC_CFR_criteria.extend(
@@ -223,7 +224,7 @@ for x in range(len(LOINC_code)):
                                       for result in items["result"]])
             decend_LOINC_root.extend([result["rootSource"]
                                      for result in items["result"]])
-    except Exception as except_error:
+    except Exception as except_error: # pylint: disable=broad-exception-caught
         print(except_error)
 
 

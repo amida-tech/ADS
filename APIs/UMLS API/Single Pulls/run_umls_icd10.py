@@ -1,7 +1,14 @@
+"""
+This script ingests a CSV file of condition diagnosis and symptom keywords and 
+returns and Excel file of ICD-10 codes that are associated with the inputted keywords
+Resources: 
+- [Keywords template](https://docs.google.com/spreadsheets/d/1_RapZeT2gHfZQERkFxnjQZEbvCiMd5hNdy9sqATFvNw/edit?gid=0#gid=0) # pylint: disable=line-too-long
+"""
+
 # Imports
 from json.decoder import JSONDecodeError
-import requests
-import pandas as pd
+import requests # pylint: disable=import-error
+import pandas as pd # pylint: disable=import-error
 
 ## CHANGE INPUTS HERE ##
 API_KEY = 'YOUR API KEY HERE'
@@ -51,14 +58,14 @@ cfr_criteria_ICD_10 = []
 names = [item.replace(" ", "_") for item in string_list]
 
 # Additional API to supplement UMLS ICD10 API call
-for x in range(len(names)):
+for x in range(len(names)): # pylint: disable=consider-using-enumerate
     value = names[x]
     STRING = string_list[x]
     DC_code = df["VASRD Code"][df['Keyword'] == STRING].to_list()[0]
     CFR_criteria = df['CFR Criteria'][df['Keyword'] == STRING].to_list()[0]
     data_concpet = df['Data Concept'][df['Keyword'] == STRING].to_list()[0]
 
-    URL = f"https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?sf=code,name&terms={value}&maxList=500"
+    URL = f"https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?sf=code,name&terms={value}&maxList=500" # pylint: disable=line-too-long
     response = requests.get(URL)
 
     if response.status_code == 200:
@@ -101,7 +108,7 @@ cfr_criteria_2 = []
 data_concept_2 = []
 keyword_value_2 = []
 
-for x in range(len(string_list)):
+for x in range(len(string_list)): # pylint: disable=consider-using-enumerate
     STRING = str(string_list[x])
     # Precompute metadata for this keyword to avoid repeated DataFrame
     # filtering.
@@ -144,7 +151,7 @@ for x in range(len(string_list)):
             code_2.extend([item['ui'] for item in items])
             name_2.extend([item['name'] for item in items])
             vocab_type_2.extend([item['rootSource'] for item in items])
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-exception-caught
         print(f"Error processing keyword {STRING}: {e}")
         continue  # Skip this CUI and continue with the next one
 
@@ -249,7 +256,7 @@ decend_ICD_10_CFR_criteria = []
 decend_ICD_10_data_concept = []
 decend_ICD_10_keyword_value = []
 
-for x in range(len(ICD10_code)):
+for x in range(len(ICD10_code)): # pylint: disable=consider-using-enumerate
     SOURCE = 'ICD10'
     STRING = icd10_trans_df["Keyword"].to_list()[x]
     DC_code = icd10_trans_df["VASRD Code"][icd10_trans_df['Keyword'] == STRING].to_list()[
@@ -273,10 +280,7 @@ for x in range(len(ICD10_code)):
             r.encoding = 'utf-8'
             items = r.json()
             if r.status_code != 200:
-                if PAGE_NUMBER == 1:
-                    break
-                else:
-                    break
+                break
             decend_ICD_10_keyword_value.extend([STRING] * len(items["result"]))
             decend_ICD_10_VASRD_Code.extend([DC_code] * len(items["result"]))
             decend_ICD_10_CFR_criteria.extend(
@@ -289,8 +293,8 @@ for x in range(len(ICD10_code)):
                                       for result in items["result"]])
             decend_ICD10_root.extend([result["rootSource"]
                                      for result in items["result"]])
-    except Exception as except_error:
-        print(except_error)
+    except Exception as except_error: # pylint: disable=broad-exception-caught
+        print(f"Error processing CUI code {IDENTIFIER}: {e}")
 
 ICD10_decend = pd.DataFrame({"VASRD Code": decend_ICD_10_VASRD_Code,
                              "Data Concept": decend_ICD_10_data_concept,

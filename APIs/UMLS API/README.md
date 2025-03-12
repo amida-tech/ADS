@@ -10,7 +10,7 @@ These scripts query the UMLS API using a list of keywords and returns medical co
 4) Run the script.  A new file will be generated in the `output` folder with the medical code type appended to the condition (i.e "arrythmia" + "_icd10_codes")
 
 ## Understanding Results
-- A new Excel file will be created titled based on the CONDITION variable and the medical code script you are running.  For example, the run_umls_cpt.py file will output a file titled varicose_veins_cpt_codes if CONDITION = 'varicose_veins'.
+- A new Excel file will be created titled based on the CONDITION variable and the medical code script you are running.  For example, the `run_umls_cpt.py` file will output a file titled varicose_veins_cpt_codes if CONDITION = 'varicose_veins'.
 - The outputted file will have a list of your chosen medical codes, their code description, the keyword prompting that result.  The outputted file will also have the corresponding VASRD Code, CFR criteria, and Data Concept related to the returned medical code.   
 
 ## Inputs
@@ -18,6 +18,7 @@ These scripts query the UMLS API using a list of keywords and returns medical co
 
 ## Outputs
 - Excel file containing the following columns: 'VASRD Code', 'CFR Criteria', 'Code', 'Code Description', 'Keyword', and 'Data Concept'
+- Note: SNOMED-CT outputs two additional columns: 'Semantic Group' and 'Semantic Type'
 
 ## Warnings/Discrepancies 
 - Read `Python Script Troubleshooting` documentation located in this folder for more information on commonly returned errors and troubleshooting steps. 

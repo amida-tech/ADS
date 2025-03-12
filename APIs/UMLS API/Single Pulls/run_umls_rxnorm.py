@@ -1,7 +1,14 @@
+"""
+This script ingests a CSV file of condition medication keywords and 
+returns and Excel file of RxNorm codes that are associated with the inputted keywords
+Resources: 
+- [Keywords template](https://docs.google.com/spreadsheets/d/1_RapZeT2gHfZQERkFxnjQZEbvCiMd5hNdy9sqATFvNw/edit?gid=0#gid=0) # pylint: disable=line-too-long
+"""
+
 # Imports
 from json.decoder import JSONDecodeError
-import requests
-import pandas as pd
+import requests # pylint: disable=import-error
+import pandas as pd # pylint: disable=import-error
 
 ## CHANGE INPUTS HERE ##
 API_KEY = 'YOUR API KEY HERE'
@@ -45,7 +52,7 @@ cfr_criteria_4 = []
 data_concept_4 = []
 keyword_value_4 = []
 
-for x in range(len(string_list)):
+for x in range(len(string_list)): # pylint: disable=consider-using-enumerate
     STRING = str(string_list[x])
     DC_code = df["VASRD Code"][df['Keyword'] == STRING].to_list()[0]
     CFR_criteria = df['CFR Criteria'][df['Keyword'] == STRING].to_list()[0]
@@ -68,10 +75,7 @@ for x in range(len(string_list)):
             items = (([outputs['result']])[0])['results']
 
             if len(items) == 0:
-                if PAGE == 1:
-                    break
-                else:
-                    break
+                break
 
             # Using list comprehension to append data
             keyword_value_4.extend([STRING] * len(items))
@@ -82,7 +86,7 @@ for x in range(len(string_list)):
             name_4.extend([result['name'] for result in items])
             vocab_type_4.extend([result['rootSource'] for result in items])
 
-    except Exception as e:
+    except Exception as e: # pylint: disable=broad-exception-caught
         print(f"Error processing keyword {STRING}: {e}")
         continue  # Skip this CUI and continue with the next one
 
@@ -187,6 +191,18 @@ RxNorm_full_grouped = RxNorm_trans_df_clean.groupby('Code').agg({
 
 RxNorm_full_grouped = RxNorm_full_grouped[RxNorm_full_grouped["Code"].str.len(
 ) >= 5]
+
+# Reorder columns
+RxNorm_full_grouped = RxNorm_full_grouped.reindex(
+    [
+        "VASRD Code",
+        "CFR Criteria",
+        "Code Set",
+        "Code",
+        "Code Description",
+        "Keyword",
+        "Data Concept"],
+    axis=1)
 
 # Save file
 OUTPATH = 'output/'
