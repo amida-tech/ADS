@@ -11,8 +11,8 @@ The output is a structured excel file titled 'complete_rxnorm_classes' with thre
 """
 
 import time
-import requests  # pylint: disable=import-error
-import pandas as pd  # pylint: disable=import-error
+import requests
+import pandas as pd
 
 # INPUTS
 INPUT_FILE_NAME = "Test Subset RxNorm"
@@ -20,13 +20,13 @@ OUTPUT_FILE_NAME = "complete_rxnorm_classes"
 # END OF INPUTS
 
 
-def get_va_class_for_cui(cui): # pylint: disable=inconsistent-return-statements
+def get_va_class_for_cui(cui):
     """Returns VA Class for an RxNorm code"""
     base_url = "https://rxnav.nlm.nih.gov/REST/rxclass/class/byRxcui.json"
     params = {"rxcui": cui}
 
     try:
-        response = requests.get(base_url, params=params)
+        response = requests.get(base_url, params=params, timeout=10)
         response.raise_for_status()
         data = response.json()
 
@@ -38,17 +38,23 @@ def get_va_class_for_cui(cui): # pylint: disable=inconsistent-return-statements
             }
             return "; ".join(va_classes) if va_classes else "No VA Class Found"
 
+    except requests.exceptions.Timeout:
+        return f"Error: Timeout occurred while processing {cui} for VA Class"
+
     except requests.exceptions.RequestException as e:
         return f"Error processing {cui} for VA Class: {e}"
 
+    # Ensuring all paths return a value
+    return "No VA Class Found"
 
-def get_atc1_4_class_for_cui(cui): # pylint: disable=inconsistent-return-statements
+
+def get_atc1_4_class_for_cui(cui):
     """Returns ATC1-4 for an RxNorm code"""
     base_url = "https://rxnav.nlm.nih.gov/REST/rxclass/class/byRxcui.json"
     params = {"rxcui": cui}
 
     try:
-        response = requests.get(base_url, params=params)
+        response = requests.get(base_url, params=params, timeout=10)
         response.raise_for_status()
         data = response.json()
 
@@ -61,17 +67,23 @@ def get_atc1_4_class_for_cui(cui): # pylint: disable=inconsistent-return-stateme
             return "; ".join(
                 atc1_4_classes) if atc1_4_classes else "No ATC1-4 Class Found"
 
+    except requests.exceptions.Timeout:
+        return f"Error: Timeout occurred while processing {cui} for ATC1-4 Class"
+
     except requests.exceptions.RequestException as e:
         return f"Error processing {cui} for ATC1-4: {e}"
 
+    # Ensuring all paths return a value
+    return "No ATC1-4 Class Found"
 
-def get_epc_class_for_cui(cui): # pylint: disable=inconsistent-return-statements
+
+def get_epc_class_for_cui(cui):
     """Returns EPC for an RxNorm code"""
     base_url = "https://rxnav.nlm.nih.gov/REST/rxclass/class/byRxcui.json"
     params = {"rxcui": cui}
 
     try:
-        response = requests.get(base_url, params=params)
+        response = requests.get(base_url, params=params, timeout=10)
         response.raise_for_status()
         data = response.json()
 
@@ -83,17 +95,23 @@ def get_epc_class_for_cui(cui): # pylint: disable=inconsistent-return-statements
             }
             return "; ".join(epc_classes) if epc_classes else "No EPC Found"
 
+    except requests.exceptions.Timeout:
+        return f"Error: Timeout occurred while processing {cui} for EPC"
+
     except requests.exceptions.RequestException as e:
         return f"Error processing {cui} for EPC: {e}"
 
+    # Ensuring all paths return a value
+    return "No EPC Found"
 
-def get_may_treat_class_for_cui(cui): # pylint: disable=inconsistent-return-statements
+
+def get_may_treat_class_for_cui(cui):
     """Returns possible associated diagnoses associated with an RxNorm code"""
     base_url = "https://rxnav.nlm.nih.gov/REST/rxclass/class/byRxcui.json"
     params = {"rxcui": cui}
 
     try:
-        response = requests.get(base_url, params=params)
+        response = requests.get(base_url, params=params, timeout=10)
         response.raise_for_status()
         data = response.json()
 
@@ -104,10 +122,16 @@ def get_may_treat_class_for_cui(cui): # pylint: disable=inconsistent-return-stat
                 if item.get("rela") == "may_treat"
             }
             return "; ".join(
-                may_treat_classes) if may_treat_classes else "No May Treat Class Found"
+                may_treat_classes) if may_treat_classes else "No may_treat Relation Found"
+
+    except requests.exceptions.Timeout:
+        return f"Error: Timeout occurred while processing {cui} for may_treat relation"
 
     except requests.exceptions.RequestException as e:
         return f"Error processing {cui} for may_treat relation: {e}"
+
+    # Ensuring all paths return a value
+    return "No may_treat Relation Found"
 
 
 def process_cui_list(file_path, output_file):
