@@ -74,7 +74,7 @@ for x in range(len(string_list)): # pylint: disable=consider-using-enumerate
             query = {'string': STRING, 'apiKey': API_KEY, 'pageNumber': PAGE}
             query['includeObsolete'] = 'true'
             query['sabs'] = "LNC"
-            r = requests.get(FULL_URL, params=query)
+            r = requests.get(FULL_URL, params=query, timeout=10)
             r.raise_for_status()
             r.encoding = 'utf-8'
             outputs = r.json()
@@ -150,7 +150,7 @@ for idx, cui in enumerate(cui_list):
             'returnIdType': 'code',
             'pageNumber': PAGE}
         try:
-            output = requests.get(BASE_URI + PATH, params=query)
+            output = requests.get(BASE_URI + PATH, params=query, timeout=10)
             output.encoding = 'utf-8'
             outputJson = output.json()
             results = (([outputJson['result']])[0])['results']
@@ -169,6 +169,9 @@ for idx, cui in enumerate(cui_list):
             print(
                 f"JSONDecodeError encountered for CUI: {cui}. Skipping this entry.")
             break  # Exit the while loop for this `cui` and proceed to the next one
+        except requests.exceptions.Timeout:
+            print(f"Error: Timeout occurred while processing CUI: {cui}. Skipping this entry")
+            break # Exit the while loop for this `cui` and proceed to the next one
 
 LOINC_trans_df = pd.DataFrame({"VASRD Code": LOINC_DC_Code,
                                "Data Concept": LOINC_data_concept,
@@ -207,7 +210,7 @@ for x in range(len(LOINC_code)): # pylint: disable=consider-using-enumerate
         while True:
             PAGE_NUMBER += 1
             query = {'apiKey': API_KEY, 'pageNumber': PAGE_NUMBER}
-            r = requests.get(BASE_URI + CONTENT_ENDPOINT, params=query)
+            r = requests.get(BASE_URI + CONTENT_ENDPOINT, params=query, timeout=10)
             r.encoding = 'utf-8'
             items = r.json()
             if r.status_code != 200:
@@ -224,8 +227,11 @@ for x in range(len(LOINC_code)): # pylint: disable=consider-using-enumerate
                                       for result in items["result"]])
             decend_LOINC_root.extend([result["rootSource"]
                                      for result in items["result"]])
+    except requests.exceptions.Timeout:
+        print(f"Error: Timeout occurred while processing {IDENTIFIER}. Skipping this entry")
+        break
     except Exception as except_error: # pylint: disable=broad-exception-caught
-        print(except_error)
+        print(f"Error processing child codes for LOINC CUI code {IDENTIFIER}: {except_error}")
 
 
 LOINC_decend = pd.DataFrame({"VASRD Code": decend_LOINC_DC_Code,

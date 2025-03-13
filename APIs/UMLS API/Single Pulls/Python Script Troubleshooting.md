@@ -24,6 +24,13 @@ There are two types of errors that can be outputted from these scripts.  There a
 6. Make sure that this SNOMED-CT code is in your final output.  Sometimes it'll still be processed in the final output. 
 7. NOTE: If you get multiple JSONDecodeErrors (>15), I'd recommend re-running the script.
 
+#### "Error: Timeout occurred while processing: {IDENTIFIER}. Skipping this entry"
+- Problem: This error occurs when an HTTP request to retrieve data for the given medical code takes longer than the specified timeout limit, causing the request to fail and be skipped.
+- Solution: 
+1. Check that your internet connection is stable
+2. Re-run the script 
+3. If that doesn't work, try increasing the timeout limit to 20 seconds instead of 10 seconds (Ctrl+F "timeout=10")
+
 ### Server Error Response Codes
 Reference [this website](https://en.wikipedia.org/wiki/List_of_HTTP_status_codes) for a list of Server Error Response Code.  Some examples of these codes are: 502, 404, etc.
 

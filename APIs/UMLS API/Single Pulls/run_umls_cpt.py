@@ -71,7 +71,7 @@ for x in range(len(string_list)): # pylint: disable=consider-using-enumerate
             query = {'string': STRING, 'apiKey': API_KEY, 'pageNumber': PAGE}
             query['includeObsolete'] = 'true'
             query['sabs'] = "CPT"
-            r = requests.get(FULL_URL, params=query)
+            r = requests.get(FULL_URL, params=query, timeout=10)
             r.raise_for_status()
             r.encoding = 'utf-8'
             outputs = r.json()
@@ -90,6 +90,9 @@ for x in range(len(string_list)): # pylint: disable=consider-using-enumerate
             name_3.extend([result['name'] for result in items])
             vocab_type_3.extend([result['rootSource'] for result in items])
 
+    except requests.exceptions.Timeout:
+        print(f"Error: Timeout occurred while processing {STRING}. Skipping this entry")
+        continue
     except Exception as e: # pylint: disable=broad-exception-caught
         print(f"Error processing keyword {STRING}: {e}")
         continue  # Skip this CUI and continue with the next one
@@ -148,7 +151,7 @@ for idx, cui in enumerate(cui_list):
             'returnIdType': 'code',
             'pageNumber': PAGE}
         try:
-            output = requests.get(BASE_URI + PATH, params=query)
+            output = requests.get(BASE_URI + PATH, params=query, timeout=10)
             output.encoding = 'utf-8'
             outputJson = output.json()
             results = (([outputJson['result']])[0])['results']
@@ -163,6 +166,10 @@ for idx, cui in enumerate(cui_list):
             CPT_code.extend([item['ui'] for item in results])
             CPT_name.extend([item['name'] for item in results])
             CPT_root.extend([item['rootSource'] for item in results])
+        except requests.exceptions.Timeout:
+            print(
+                f"Error: Timeout occurred while processing {cui}. Skipping this entry")
+            break
         except JSONDecodeError:
             print(
                 f"JSONDecodeError encountered for CUI: {cui}. Skipping this entry.")
@@ -205,7 +212,7 @@ for x in range(len(CPT_code)): # pylint: disable=consider-using-enumerate
         while True:
             PAGE_NUMBER += 1
             query = {'apiKey': API_KEY, 'pageNumber': PAGE_NUMBER}
-            r = requests.get(BASE_URI + CONTENT_ENDPOINT, params=query)
+            r = requests.get(BASE_URI + CONTENT_ENDPOINT, params=query, timeout=10)
             r.encoding = 'utf-8'
             items = r.json()
             if r.status_code != 200:
@@ -222,8 +229,11 @@ for x in range(len(CPT_code)): # pylint: disable=consider-using-enumerate
                                     for result in items["result"]])
             decend_CPT_root.extend([result["rootSource"]
                                    for result in items["result"]])
+    except requests.exceptions.Timeout:
+        print(f"Error: Timeout occurred while processing {IDENTIFIER}. Skipping this entry")
+        break
     except Exception as except_error: # pylint: disable=broad-exception-caught
-        print(except_error)
+        print(f"Error occured while processing {IDENTIFIER}: {except_error}")
 
 CPT_decend = pd.DataFrame({"VASRD Code": decend_CPT_VASRD_Code,
                            "Data Concept": decend_CPT_data_concept,

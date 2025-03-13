@@ -67,7 +67,7 @@ for x in range(len(string_list)): # pylint: disable=consider-using-enumerate
             query = {'string': STRING, 'apiKey': API_KEY, 'pageNumber': PAGE}
             query['includeObsolete'] = 'true'
             query['sabs'] = "RXNORM"
-            r = requests.get(FULL_URL, params=query)
+            r = requests.get(FULL_URL, params=query, timeout=10)
             r.raise_for_status()
             r.encoding = 'utf-8'
             outputs = r.json()
@@ -144,7 +144,7 @@ for idx, cui in enumerate(cui_list):
             'returnIdType': 'code',
             'pageNumber': PAGE}
         try:
-            output = requests.get(BASE_URI + PATH, params=query)
+            output = requests.get(BASE_URI + PATH, params=query, timeout=10)
             output.encoding = 'utf-8'
             outputJson = output.json()
             results = (([outputJson['result']])[0])['results']
@@ -163,6 +163,9 @@ for idx, cui in enumerate(cui_list):
             print(
                 f"JSONDecodeError encountered for CUI: {cui}. Skipping this entry.")
             break  # Exit the while loop for this `cui` and proceed to the next one
+        except requests.exceptions.Timeout:
+            print(f"Error: Timeout occurred while processing CUI: {cui}. Skipping this entry")
+            break # Exit the while loop for this `cui` and proceed to the next one
 
 # Create the resulting DataFrame
 RxNorm_trans_df = pd.DataFrame({

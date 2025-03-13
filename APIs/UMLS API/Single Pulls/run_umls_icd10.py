@@ -66,7 +66,7 @@ for x in range(len(names)): # pylint: disable=consider-using-enumerate
     data_concpet = df['Data Concept'][df['Keyword'] == STRING].to_list()[0]
 
     URL = f"https://clinicaltables.nlm.nih.gov/api/icd10cm/v3/search?sf=code,name&terms={value}&maxList=500" # pylint: disable=line-too-long
-    response = requests.get(URL)
+    response = requests.get(URL, timeout=10)
 
     if response.status_code == 200:
         try:
@@ -81,7 +81,8 @@ for x in range(len(names)): # pylint: disable=consider-using-enumerate
                 cfr_criteria_ICD_10.extend([CFR_criteria] * count)
                 data_concept_ICD_10.extend([data_concpet] * count)
         except requests.exceptions.JSONDecodeError:
-            print(f"Error parsing JSON for {value}")
+            print(f"JSONDecodeError encountered for {value}. Skipping this entry.")
+            continue
     else:
         print(
             f"Error: Received status code {response.status_code} for keyword: {value}")
@@ -129,7 +130,7 @@ for x in range(len(string_list)): # pylint: disable=consider-using-enumerate
                 'includeObsolete': 'true',
                 'sabs': "ICD10"
             }
-            r = requests.get(FULL_URL, params=query)
+            r = requests.get(FULL_URL, params=query, timeout=10)
             r.raise_for_status()
             r.encoding = 'utf-8'
             outputs = r.json()
@@ -209,7 +210,7 @@ for idx, cui in enumerate(cui_list):
             'returnIdType': 'code',
             'pageNumber': PAGE}
         try:
-            output = requests.get(BASE_URI + PATH, params=query)
+            output = requests.get(BASE_URI + PATH, params=query, timeout=10)
             output.encoding = 'utf-8'
             outputJson = output.json()
 
@@ -232,6 +233,9 @@ for idx, cui in enumerate(cui_list):
             ICD10_name.extend([item['name'] for item in results])
             ICD10_root.extend([item['rootSource'] for item in results])
 
+        except requests.exceptions.Timeout:
+            print(f"Error: Timeout occurred while processing {cui}. Skipping this entry")
+            break
         except JSONDecodeError:
             print(
                 f"JSONDecodeError encountered in ICD-10 pull for CUI: {cui}. Skipping this entry.")
@@ -276,7 +280,7 @@ for x in range(len(ICD10_code)): # pylint: disable=consider-using-enumerate
         while True:
             PAGE_NUMBER += 1
             query = {'apiKey': API_KEY, 'pageNumber': PAGE_NUMBER}
-            r = requests.get(BASE_URI + CONTENT_ENDPOINT, params=query)
+            r = requests.get(BASE_URI + CONTENT_ENDPOINT, params=query, timeout=10)
             r.encoding = 'utf-8'
             items = r.json()
             if r.status_code != 200:
@@ -293,8 +297,11 @@ for x in range(len(ICD10_code)): # pylint: disable=consider-using-enumerate
                                       for result in items["result"]])
             decend_ICD10_root.extend([result["rootSource"]
                                      for result in items["result"]])
+    except requests.exceptions.Timeout:
+        print(f"Error: Timeout occurred while processing {IDENTIFIER}. Skipping this entry")
+        break
     except Exception as except_error: # pylint: disable=broad-exception-caught
-        print(f"Error processing CUI code {IDENTIFIER}: {e}")
+        print(f"Error processing child code(s) for ICD-10 CUI code {IDENTIFIER}: {e}")
 
 ICD10_decend = pd.DataFrame({"VASRD Code": decend_ICD_10_VASRD_Code,
                              "Data Concept": decend_ICD_10_data_concept,
