@@ -6,8 +6,8 @@ The output is a structured excel file titled 'drug_epc_results' with two columns
 "Drug Name" and "RxNorm API EPC"
 """
 import time
-import requests  # pylint: disable=import-error
-import pandas as pd  # pylint: disable=import-error
+import requests
+import pandas as pd
 
 
 # INPUTS
@@ -25,7 +25,7 @@ def get_epc_for_drug(drug_name):
         "drugName": drug_name,
     }
     try:
-        response = requests.get(base_url, params=params)
+        response = requests.get(base_url, params=params, timeout=10)
 
         # If the response status code is not 200, raise an HTTPError
         response.raise_for_status()
@@ -48,6 +48,8 @@ def get_epc_for_drug(drug_name):
     except requests.exceptions.HTTPError as http_err:
         print(f"HTTP error occurred for {drug_name}: {http_err}")
         return f"Error: {http_err}"
+    except requests.exceptions.Timeout:
+        return f"Error: Timeout occurred while processing {drug_name}"
     except requests.exceptions.RequestException as req_err:
         print(f"Request error occurred for {drug_name}: {req_err}")
         return f"Error: {req_err}"
