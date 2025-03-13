@@ -7,8 +7,8 @@ Resources:
 
 # Imports
 from json.decoder import JSONDecodeError
-import requests  # pylint: disable=import-error
-import pandas as pd  # pylint: disable=import-error
+import requests
+import pandas as pd
 
 ## CHANGE INPUTS HERE ##
 API_KEY = 'YOUR API KEY HERE'
