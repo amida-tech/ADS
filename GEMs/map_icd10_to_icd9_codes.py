@@ -1,5 +1,5 @@
 """
-This script will reverse map ICD-9 codes from the GEMS files to ICD-10 codes in the input file
+This script will reverse map ICD-10 codes to ICD-9 codes using the GEMs files
 and clean the results for user review.
 
 Script assumes that the input file includes a "Code Set Details" sheet that includes ICD-10 codes
