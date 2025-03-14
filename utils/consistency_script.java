@@ -235,7 +235,6 @@ function validateAndStoreCriteria() {
   
   
   function GeneralSorter(){
-  
     var ss = SpreadsheetApp.getActiveSpreadsheet();
     var sheet = ss.getSheetByName("Code Set Details");
   
@@ -248,28 +247,41 @@ function validateAndStoreCriteria() {
     var range = sheet.getRange(2, 1, lastRow - 1, lastColumn);
     var values = range.getValues(); // Get all data
   
-    // Sort first by Column C (index 2), then by Column D (index 3)
+    // Sort first by Column A (index 0), then by Column B (index 1), then by Column C (index 2), and finally by Column D (index 3)
     values.sort((a, b) => {
-      var colC_a = isNaN(a[2]) ? a[2].toString() : Number(a[2]); 
-      var colC_b = isNaN(b[2]) ? b[2].toString() : Number(b[2]);
+      // Compare Column A, handle single numbers and multiple numbers (separated by semicolons)
+      var colA_a = a[0].toString().split(';').map(num => Number(num.trim()));
+      var colA_b = b[0].toString().split(';').map(num => Number(num.trim()));
       
+      
+      var colAComparison = Math.min(...colA_a) - Math.min(...colA_b); // Compare the minimum number from the list
+      if (colAComparison !== 0) return colAComparison;
+  
+      // Compare Column B as a number
+      var colB_a = isNaN(a[1]) ? a[1].toString() : Number(a[1]);
+      var colB_b = isNaN(b[1]) ? b[1].toString() : Number(b[1]);
+  
+      var colBComparison = colB_a < colB_b ? -1 : colB_a > colB_b ? 1 : 0;
+      if (colBComparison !== 0) return colBComparison;
+  
+      // Compare Column C as a number
+      var colC_a = isNaN(a[2]) ? a[2].toString() : Number(a[2]);
+      var colC_b = isNaN(b[2]) ? b[2].toString() : Number(b[2]);
+  
       var colCComparison = colC_a < colC_b ? -1 : colC_a > colC_b ? 1 : 0;
+      if (colCComparison !== 0) return colCComparison;
   
-      if (colCComparison === 0) {
-        var colD_a = isNaN(a[3]) ? a[3].toString() : Number(a[3]);
-        var colD_b = isNaN(b[3]) ? b[3].toString() : Number(b[3]);
+      // Finally, compare Column D as a number
+      var colD_a = isNaN(a[3]) ? a[3].toString() : Number(a[3]);
+      var colD_b = isNaN(b[3]) ? b[3].toString() : Number(b[3]);
   
-        return colD_a < colD_b ? -1 : colD_a > colD_b ? 1 : 0;
-      }
-    
-      return colCComparison;
+      return colD_a < colD_b ? -1 : colD_a > colD_b ? 1 : 0;
     });
   
-  
-    // Write sorted data back to the sheet (keeping all columns aligned)
+    // Write the sorted data back to the sheet
     range.setValues(values);
-  
   }
+  
   
   
   
