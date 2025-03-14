@@ -39,8 +39,8 @@ AddICD9 = pd.merge(ICD10List, GEMS, on=['ICD10'], how='left')
 AddICD9 = pd.merge(AddICD9, ICD9desc, on=['ICD9'], how='left')
 
 # Reformat ICD9 and ICD10 codes, names
-AddICD9['ICD9'] = (AddICD9['ICD9'].str[:3] + '.' + AddICD9['ICD9'].str[3:])
-AddICD9['ICD10'] = (AddICD9['ICD10'].str[:3] + '.' + AddICD9['ICD10'].str[3:])
+AddICD9['ICD9'] = AddICD9['ICD9'].str[:3] + '.' + AddICD9['ICD9'].str[3:]
+AddICD9['ICD10'] = AddICD9['ICD10'].str[:3] + '.' + AddICD9['ICD10'].str[3:]
 ICD9codes = AddICD9
 ICD9codes = ICD9codes.rename({'LONG DESCRIPTION': 'ICD9 Name'}, axis=1)
 ICD9codes['Code Set'] = "ICD-9"  # Set 'Code Set' column to "ICD-9"
