@@ -1,5 +1,5 @@
 """
-This script will reverse map ICD-9 codes from the GEMs files to ICD-10 codes in the input file
+This script will reverse map ICD-9 codes from the GEMS files to ICD-10 codes in the input file
 and clean the results for user review.
 
 Script assumes that the input file includes a "Code Set Details" sheet that includes ICD-10 codes
@@ -45,7 +45,9 @@ ICD9codes = AddICD9
 ICD9codes = ICD9codes.rename({'LONG DESCRIPTION': 'ICD9 Name'}, axis=1)
 ICD9codes['Code Set'] = "ICD-9"  # Set 'Code Set' column to "ICD-9"
 # Filter and sort columns to keep
-ICD9codes = ICD9codes.iloc[:, [0, 1, 2, 11, 13, 12, 3, 4]]
+ICD9codes = ICD9codes.loc[:, ['VASRD Code', 'CFR Criteria', 'Code Set',
+                              'ICD9', 'ICD9 Name', 'Flag', 'ICD10', 'ICD10 Name']]
+
 
 # Remove rows where ICD9 or Flag columns are blank
 ICD9codes = ICD9codes[ICD9codes['ICD9'].notna()]
@@ -68,23 +70,15 @@ def flag_review(i):
 ICD9codes['Flag'] = ICD9codes['Flag'].apply(flag_review)
 
 
-# Creating dataframe for codes with 00000 flag. Setting flag = "Accurate"
-# Accurate, corresponding code, does not require combination
-AccurateICD9 = ICD9codes[ICD9codes['Flag'] == 'Accurate']
-# Dropping the ICD-10 columns since no review is needed
-AccurateICD9 = AccurateICD9.iloc[:, 0:6]
+# Creating dataframe for codes with flags starting with 000, 100 or 101
+# Codes flagged as approximate or requiring combination need further review
 
-
-# Creating dataframe for codes with flags starting with 100 or 101
-# Flagging codes that need review due to being approximate or requiring combination
-# Dataframe will include ICD10 codes and descriptions necessary for ICD9
-# code review
-ReviewICD9 = ICD9codes[ICD9codes['Flag'].isin(
-    ['Approximate', 'Requires combination'])]
+FinalICD9 = ICD9codes[ICD9codes['Flag'].isin(
+    ['Accurate', 'Approximate', 'Requires combination'])]
 
 # For the dataframe that needs manual review, concatenate the VASRD, CFR Criteria, ICD-10 codes
 # and ICD-10 descriptions if there are duplicate rows
-ReviewICD9 = ReviewICD9.groupby('ICD9', as_index=False).agg({
+FinalICD9 = FinalICD9.groupby('ICD9', as_index=False).agg({
     'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
     'CFR Criteria': lambda x: '; '.join(sorted(set(x))),
     'Code Set': 'first',
@@ -95,15 +89,13 @@ ReviewICD9 = ReviewICD9.groupby('ICD9', as_index=False).agg({
     'ICD10 Name': lambda x: '; '.join(sorted(set(x)))
 })
 
-# Combine the dataframe with Accurate ICD9 codes and the dataframe
-# with ICD9 codes to review
-CombinedICD9 = pd.concat([ReviewICD9, AccurateICD9], ignore_index=True)
-CombinedICD9 = CombinedICD9.fillna('')
 
-
-# Update output file path to desired output file path. A new file
-# of mapped ICD-9 codes will be generated. Manual review of codes with
+# A new file of mapped ICD-9 codes will be generated. Manual review of codes with
 # an "Approximate" or "Requires Combination" Flag is necessary.
 
 OUTPUT_FILE_PATH = f"output/{CODE_SET_NAME}_confirmed.xlsx"
-CombinedICD9.to_excel(OUTPUT_FILE_PATH, index=False)
+FinalICD9.to_excel(OUTPUT_FILE_PATH, index=False)
+
+# Print a message indicating where the file is saved
+print(
+    f"Excel file '{CODE_SET_NAME}_confirmed.xlsx' saved in the output folder.")
