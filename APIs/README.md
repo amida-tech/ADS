@@ -1,16 +1,9 @@
-# API Data Team Collection 
-
-## Folder Descriptions
+# Folder Descriptions
 - openFDA API 
     - Contains code that gathers NDC codes 
-    - Advantages: Gathers all product_ndc codes for a list of drug codes (Excel sheet or manual list input available) 
-    - Disadvantages: Currently only gathers NDC codes, and formatted output may be outdated depending on VA feedback
 
 - UMLS API
-    - Contains code that gathers SNOMED-CT, ICD10, CPT, LOINC and RxNorm codes (collective or individually)
-    - Advantages: gathers all codes commonly required to gather for a eCFR diagnosis codeset.
-    - Disadvantages: Requires account with UMLS and access to a UMLS apikey (apikey comes with the account)
+    - Contains code that gathers SNOMED-CT, ICD10, CPT, LOINC and RxNorm codes
 
-- output 
-    - Contains output from code run in the openFDA and UMLS API folders
-    - If not created manually, the folder will appear after running any script in the openFDA API or UMLS API folders (and their subsetted folders)
+- RxNav API 
+    - Contains code that gathers medication VA Class, [Established Pharmacologic Class (EPC)](https://www.fda.gov/industry/structured-product-labeling-resources/pharmacologic-class), [Anatomical Therapeutic Chemical (ATC) Classification](https://www.who.int/tools/atc-ddd-toolkit/atc-classification), and the [may_treat](https://lhncbc.nlm.nih.gov/RxNav/applications/RxClassIntro.html) relation.
