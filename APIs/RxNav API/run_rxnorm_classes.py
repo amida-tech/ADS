@@ -141,7 +141,7 @@ def process_cui_list(file_path, output_file):
 
     for _, row in df.iterrows():
         cui = str(row.iloc[0])  # Code Value (CUI)
-        description = str(row.iloc[0])  # Code Description
+        description = str(row.iloc[1])  # Code Description
         va_class = get_va_class_for_cui(cui)
         epc_class = get_epc_class_for_cui(cui)
         atc1_4_class = get_atc1_4_class_for_cui(cui)
