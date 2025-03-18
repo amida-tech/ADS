@@ -14,10 +14,10 @@ import pandas as pd
 API_KEY = 'YOUR API KEY HERE'
 
 # Output Excel Sheet Name
-CONDITION = 'CONDITION NAME'
+CONDITION = 'Knee'
 
 # Input Excel Sheet with Keywords Name
-CSV_FILE_INPUT_NAME = 'CONDITION KEYWORDS FILE NAME'
+CSV_FILE_INPUT_NAME = 'Test Knee Keywords'
 
 ## END OF REQUESTED INPUTS ##
 VERSION = 'current'

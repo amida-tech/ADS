@@ -14,10 +14,10 @@ import pandas as pd
 API_KEY = 'YOUR API KEY HERE'
 
 # Output Excel Sheet Name
-CONDITION = 'CONDITION NAME'
+CONDITION = 'Knee'
 
 # Input Excel Sheet with Keywords Name
-CSV_FILE_INPUT_NAME = 'CONDITION KEYWORDS FILE NAME'
+CSV_FILE_INPUT_NAME = 'Test Knee Keywords'
 
 ## END OF REQUESTED INPUTS ##
 VERSION = 'current'
@@ -231,7 +231,7 @@ for x in range(len(LOINC_code)): # pylint: disable=consider-using-enumerate
         print(f"Error: Timeout occurred while processing {IDENTIFIER}. Skipping this entry")
         break
     except Exception as except_error: # pylint: disable=broad-exception-caught
-        print(f"Error processing child codes for LOINC CUI code {IDENTIFIER}: {except_error}")
+        print(f"Error occured while processing {IDENTIFIER}: {except_error}")
 
 
 LOINC_decend = pd.DataFrame({"VASRD Code": decend_LOINC_DC_Code,

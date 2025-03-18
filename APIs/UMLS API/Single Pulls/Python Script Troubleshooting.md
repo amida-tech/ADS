@@ -11,10 +11,14 @@ There are two types of errors that can be outputted from these scripts.  There a
 ### Python Script Error Responses
 #### "Error processing keyword: {string}: {e}"
 - Problem: This problem occurs in the chunk where Python queries UMLS for CUI codes associated with certain keywords. If an error arises while querying a particular keyword, the keyword and specific error will be outputted in the terminal.
-- Solution: The solution is dependent upon the error received.  This error has not been reported yet.  if you encounter this error, please let Alyssa Warnock (alyssa.warnock@amida.com) know. 
+- Solution: The solution is dependent upon the error received.  If the specific error has not been reported yet, please let Alyssa Warnock (alyssa.warnock@amida.com) know to update the documentation.
 
-#### "JSONDecodeError encountered in pull for CUI: {cui}. Skipping this entry."
-- Problem: This error commonly occurs when UMLS can't keep up with Python's requests.  Sometimes the code that throws the error may still be in the final output.  This is because all this error says is that Python is receiving something that it didn't expect at the time it processed it, but UMLS is fast and may have returned the information right after Python threw the error.  The only way to confirm this is to see if hte SNOMED-CT code is in the outputted code set. Follow the solution steps below to find the applicable code.  
+#### "Error occured while processing {IDENTIFIER}: {except_error}"
+- Problem: This problem occurs int he chunk where Python queries decendant codes.  This is not in all python scripts. If an error arises while querying a particular code, the code and specific error will be outputted in the terminal. 
+- Solution: The solution is dependent upon the error received.  If the specific error has not been reported yet, please let Alyssa Warnock (alyssa.warnock@amida.com) know to update the documentation.
+
+#### "JSONDecodeError encountered for CUI: {cui}. Skipping this entry."
+- Problem: This error commonly occurs when UMLS can't keep up with Python's requests.  Sometimes the code that throws the error may still be in the final output.  This is because all this error says is that Python is receiving something that it didn't expect at the time it processed it, but UMLS is fast and may have returned the information right after Python threw the error.  The only way to confirm this is to see if the SNOMED-CT code (or other related medical code) is in the outputted code set. Follow the solution steps below to find the applicable code.  
 - Solution: 
 1. Navigate to the [UMLS Web Browser](https://uts.nlm.nih.gov/uts/umls/home)
 2. Input the outputted CUI code into the UMLS's search engine and click Enter on your keyboard (ex: [C0554107](https://uts.nlm.nih.gov/uts/umls/searchResults?searchString=C0554107&returnType=code&tree=SNOMEDCT_US))
@@ -39,19 +43,17 @@ If your script returns a large number of JSONDecodeError messages for codes, it 
 - Full Error Text: "JSONDecodeError: Expecting value: line 1 column 1 (char 0)"
 - Reason: The JSON returned is not in the format Python is expecting
 - Solution: 
-    - VSCode: 
-        1. Open your Condition Keyword.xlsx file.
-        2. Delete the last row of empty data
-            2a. For example: If you have 25 keywords, your last keyword (accounting for the column titles) will be on row 26.  Delete row 27.
-        3. Run the UMLS script again. 
-    - Jupyter Notebook: 
-        1. Create 3 new JN chunks (click "insert cell below" 3 times)
-        2. Find "SNOMED_CT_df" (~line 99), copy the code **after** SNOMED_CT_df and place it into the first created chunk (1/3)
-        3. Find "SNOMED_CT_trans_df" (~line 59 (of the new chunk)), copy the code **after** SNOMED_CT_trans_df and place it into the second created chunk (2/3)
-        4. Find "SNOMED_CT_decend" (~line 54 (of the new chunk)), copy the code **after** SNOMED_CT_decend and place it into the third created chunk (3/3) 
-        5. Click "Restart the kernel, then re-run the whole notebook (with dialog)"
+    1. Open your Condition Keyword.xlsx file.
+     2. Delete the last row of empty data
+        2a. For example: If you have 25 keywords, your last keyword (accounting for the column titles) will be on row 26.  Delete row 27.
+    3. Run the UMLS script again. 
 
-### SNOMED-CT Only Script Errors
+### ICD-10 Only Script Troubleshooting
+#### "Error: Received status code {response.status_code} for keyword: {value}"
+- Problem: This error occurs when the Clinical Tables supplemental API call for ICD-10 codes runs into a specific error. This is a general catch-all for errors. 
+- Solution: The solution is dependent upon the error received.  If the specific error has not been reported yet, please let Alyssa Warnock (alyssa.warnock@amida.com) know to update the documentation.
+
+### SNOMED-CT Only Script Troubleshooting
 #### "Error processing Semantic Type for CUI {cui}: {e}"
 - Problem: This error occurs when the script is unable to pull the Semantic Type for a certain CUI code from UMLS.
 - Solution: 

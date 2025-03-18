@@ -14,10 +14,10 @@ import pandas as pd
 API_KEY = 'YOUR API KEY HERE'
 
 # Output Excel Sheet Name
-CONDITION = 'CONDITION NAME'
+CONDITION = 'Knee'
 
 # Input Excel Sheet with Keywords Name
-CSV_FILE_INPUT_NAME = 'CONDITION KEYWORDS FILE NAME'
+CSV_FILE_INPUT_NAME = 'Test Knee Keywords'
 
 ## END OF REQUESTED INPUTS ##
 VERSION = 'current'
@@ -70,7 +70,7 @@ for x in range(len(string_list)):  # pylint: disable=consider-using-enumerate
             query = {'string': STRING, 'apiKey': API_KEY, 'pageNumber': PAGE}
             query['includeObsolete'] = 'true'
             query['sabs'] = "SNOMEDCT_US"
-            r = requests.get(FULL_URL, params=query)
+            r = requests.get(FULL_URL, params=query, timeout=10)
             r.raise_for_status()
             r.encoding = 'utf-8'
             outputs = r.json()
@@ -128,7 +128,7 @@ for cui in cui_list:
     params = {"apiKey": API_KEY}
 
     try:
-        response = requests.get(URL, params=params)
+        response = requests.get(URL, params=params, timeout=10)
         response.encoding = "utf-8"
         response.raise_for_status()  # raise an error for non-200 responses
         json_data = response.json()
@@ -173,7 +173,7 @@ for idx, row in semantic_types_df.iterrows():
     URL = sem_uri
 
     try:
-        response = requests.get(URL)
+        response = requests.get(URL, timeout=10)
         response.encoding = "utf-8"
         response.raise_for_status()
         json_data = response.json()
@@ -255,7 +255,7 @@ for idx, cui in enumerate(cui_list):
             'returnIdType': 'code',
             'pageNumber': PAGE}
         try:
-            output = requests.get(BASE_URI + PATH, params=query)
+            output = requests.get(BASE_URI + PATH, params=query, timeout=10)
             output.encoding = 'utf-8'
             # Parse the JSON output
             outputJson = output.json()
@@ -283,7 +283,7 @@ for idx, cui in enumerate(cui_list):
 
         except JSONDecodeError:
             print(
-                f"JSONDecodeError encountered in SNOMED-CT pull for CUI: {cui}. Skipping this entry"
+                f"JSONDecodeError encountered for CUI: {cui}. Skipping this entry"
                 )
             break  # Exit the while loop for this `cui` and proceed to the next one
 

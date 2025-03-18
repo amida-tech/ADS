@@ -14,10 +14,10 @@ import pandas as pd
 API_KEY = 'YOUR API KEY HERE'
 
 # Output Excel Sheet Name
-CONDITION = 'CONDITION NAME'
+CONDITION = 'Knee'
 
 # Input Excel Sheet with Keywords Name
-CSV_FILE_INPUT_NAME = 'CONDITION KEYWORDS FILE NAME'
+CSV_FILE_INPUT_NAME = 'Test Knee Keywords'
 
 ## END OF REQUESTED INPUTS ##
 VERSION = 'current'
@@ -238,7 +238,7 @@ for idx, cui in enumerate(cui_list):
             break
         except JSONDecodeError:
             print(
-                f"JSONDecodeError encountered in ICD-10 pull for CUI: {cui}. Skipping this entry.")
+                f"JSONDecodeError encountered for CUI: {cui}. Skipping this entry.")
             break  # Exit the while loop for this `cui` and proceed to the next one
 
 icd10_trans_df = pd.DataFrame({
