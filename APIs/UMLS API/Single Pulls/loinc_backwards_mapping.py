@@ -18,7 +18,7 @@ import pandas as pd
 import requests
 
 ## CHANGE INPUTS HERE ##
-API_KEY = '903c7d74-6a9e-4d12-a3eb-6f7d41a21c2d'
+API_KEY = 'YOUR API KEY HERE'
 
 # Input Excel Sheet with LOINC Codes
 INPUT_FILE_NAME = "Test LOINC"
