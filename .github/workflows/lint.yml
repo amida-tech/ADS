@@ -1,0 +1,43 @@
+name: Lint
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  run-linters:
+    name: Run pylint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out Git repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Install Python dependencies
+        run: pip install pylint==3.0.3
+
+      - name: Fetch latest main branch
+        run: git fetch origin main
+
+      - name: Run pylint and fail if score < 9.5
+        run: |
+          changed_files=$(git diff --name-only origin/main -- '*.py')
+          if [ -z "$changed_files" ]; then
+            echo "No Python files changed. Skipping pylint."
+            exit 0
+          fi
+          pylint_output=$(pylint $changed_files || true)
+          echo "$pylint_output"
+          score=$(echo "$pylint_output" | grep "Your code has been rated at" | awk '{print $7}' | cut -d'/' -f1)
+          result=$(echo "$score < 9.5" | bc)
+          if [ "$result" -eq 1 ]; then
+            echo "Pylint score is less than 9.5. Merge blocked."
+            exit 1
+          fi
