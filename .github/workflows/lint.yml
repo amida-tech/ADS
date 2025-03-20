@@ -28,10 +28,13 @@ jobs:
 
       - name: Run pylint and fail if score < 9.5
         run: |
-          pylint_output=$(pylint $(git ls-files '*.py') --score=y | tee /dev/tty)
+          pylint_output=$(pylint $(git ls-files '*.py') --score=y)
+          echo "$pylint_output"
           score=$(echo "$pylint_output" | grep "Your code has been rated at" | awk '{print $7}' | cut -d'/' -f1)
-          if (( $(echo "$score < 9.5" | bc -l) )); then
+          result=$(echo "$score < 9.5" | bc)
+          if [ "$result" -eq 1 ]; then
             echo "Pylint score is less than 9.5. Merge blocked."
             exit 1
           fi
+      
 
