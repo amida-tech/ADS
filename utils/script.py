@@ -2,7 +2,7 @@
 
 
 def good_func():
-    
+    """TEST"""
     a = 1
     b = 2 + 8
     c = a + b
