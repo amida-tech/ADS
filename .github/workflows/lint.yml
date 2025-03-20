@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [ '**' ]
 
-
-
-
 jobs:
   run-linters:
     name: Run pylint
@@ -26,6 +23,9 @@ jobs:
       - name: Install Python dependencies
         run: pip install pylint==3.0.3
 
+      - name: Fetch latest main branch
+        run: git fetch origin main
+
       - name: Run pylint and fail if score < 9.5
         run: |
           changed_files=$(git diff --name-only origin/main -- '*.py')
@@ -41,6 +41,3 @@ jobs:
             echo "Pylint score is less than 9.5. Merge blocked."
             exit 1
           fi
-      
-      
-
