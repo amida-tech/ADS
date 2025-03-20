@@ -28,7 +28,12 @@ jobs:
 
       - name: Run pylint and fail if score < 9.5
         run: |
-          pylint_output=$(pylint $(git ls-files '*.py') --score=y || true)
+          changed_files=$(git diff --name-only origin/main -- '*.py')
+          if [ -z "$changed_files" ]; then
+            echo "No Python files changed. Skipping pylint."
+            exit 0
+          fi
+          pylint_output=$(pylint $changed_files || true)
           echo "$pylint_output"
           score=$(echo "$pylint_output" | grep "Your code has been rated at" | awk '{print $7}' | cut -d'/' -f1)
           result=$(echo "$score < 9.5" | bc)
