@@ -27,7 +27,7 @@ jobs:
         run: |
           pylint_output=$(pylint $(git ls-files '*.py') --score=y | tee /dev/tty)
           score=$(echo "$pylint_output" | grep "Your code has been rated at" | awk '{print $7}' | cut -d'/' -f1)
-          if [ "$score" != "9.5" ]; then
+          if (( $(echo "$score < 9.5" | bc -l) )); then
             echo "Pylint score is less than 9.5. Merge blocked."
             exit 1
           fi
