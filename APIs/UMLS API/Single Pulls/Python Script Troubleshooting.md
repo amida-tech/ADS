@@ -25,7 +25,7 @@ There are two types of errors that can be outputted from these scripts.  There a
 3. Filter "Vocabularies" on the left-hand side of the screen to filter for the applicable code (ex: "SNOMED-CT")
 4. Click on the final result (there should only be 1) (ex: [Appendicular pain (275406005)](https://uts.nlm.nih.gov/uts/umls/vocabulary/SNOMEDCT_US/275406005))
 5. The value in the parentheses (ex: "275406005") next to the code description (ex: "Appendicular pain") is the corresponding code for your JSONDecodeError value.
-6. Make sure that this SNOMED-CT code is in your final output.  Sometimes it'll still be processed in the final output. 
+6. Make sure that this SNOMED-CT code is in your final output.  Sometimes it'll still be processed in the final output.  If the code is not in your final output, add it to your final outputted excel sheet. 
 7. NOTE: If you get multiple JSONDecodeErrors (>15), I'd recommend re-running the script.
 
 #### "Error: Timeout occurred while processing: {IDENTIFIER}. Skipping this entry"
