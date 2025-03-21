@@ -1,5 +1,5 @@
 """
-This script processes an Excel sheet with LOINC medical codes in a column titled "LOINC_CODES" 
+This script processes an Excel sheet with LOINC medical codes in a column titled "LOINC_CODE" 
 and returns relational data related to the inputted LOINC code.
 The output is a structured Excel file containing the following columns:
 - LOINC_CODE
