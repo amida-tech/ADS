@@ -1,0 +1,24 @@
+VASRD Code,Data Concept,Code Set,CFR Criteria,Keyword
+6846,Diagnosis,ICD-10,Sarcoidosis,Sarcoidosis
+6846,Symptom,ICD-10,Cor pulmonale,Cor pulmonale
+6846,Symptom,ICD-10,Cardiac involvement with congestive heart failure,Cardiac involvement
+6846,Symptom,ICD-10,Cardiac involvement with congestive heart failure,Congestive heart failure
+6846,Symptom,ICD-10,Cardiac involvement with congestive heart failure,Heart failure
+6846,Symptom,ICD-10,Progressive pulmonary disease,Progressive pulmonary disease
+6846,Symptom,ICD-10,Progressive pulmonary disease,Pulmonary heart disease
+6846,Symptom,ICD-10,Progressive pulmonary disease,Pulmonary fibrosis
+6846,Symptom,ICD-10,Fever,Fever
+6846,Symptom,ICD-10,Night sweats,Night sweats
+6846,Symptom,ICD-10,Night sweats,Hyperhidrosis
+6846,Symptom,ICD-10,Weight loss,Weight loss
+6846,Procedure,CPT,Treatment,Lung transplant
+6846,Procedure,CPT,Treatment,Liver transplant
+6846,Procedure,CPT,Treatment,Corticosteroid
+6846,Procedure,CPT,Treatment,Oxygen therapy
+6846,Procedure,CPT,Treatment,Pacemaker
+6846,Medication,Keyword,Treatment,Hydroxychloroquine
+6846,Medication,Keyword,Treatment,Plaquenil
+6846,Medication,Keyword,Treatment,Methotrexate
+6846,Medication,Keyword,Treatment,Plaquenil
+6846,Medication,Keyword,Corticosteroids,Prednisone
+6846,Medication,Keyword,Corticosteroids,Deltasone
