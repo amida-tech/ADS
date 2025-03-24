@@ -39,12 +39,12 @@ The script `run_rxnorm_classes.py` processes RxNorm codes from an Excel file and
 
 ## Understanding Results
 A new Excel file titled `complete_rxnorm_classes` will be created. The file will have six columns: "Code Value", "Code Description", "VA Class", "EPC", "ATC1-4", and "May Treat".  
-- "Code Value" relates to the inputted RxNorm code
-- "Code Description" relates to the RxNorm medication name 
-- "VA Class" relates to the VA Class associated with the RxNorm code and Code Description 
-- "EPC" relates to the Established Pharmacologic Class associated with the RxNorm code and Code Description 
-- "ATC1-4" relates to the Anatomical Therapeutic Chemical Classification associated with the RxNorm code and Code Description
-- "May Treat" relates to the possible diagnoses that are associated with the RxNorm code and Code Description
+- "Code Value": relates to the inputted RxNorm code
+- "Code Description": relates to the RxNorm medication name 
+- "VA Class": relates to the VA Class associated with the RxNorm code and Code Description 
+- "EPC": relates to the Established Pharmacologic Class associated with the RxNorm code and Code Description 
+- "ATC1-4": relates to the Anatomical Therapeutic Chemical Classification associated with the RxNorm code and Code Description
+- "May Treat": relates to the possible diagnoses that are associated with the RxNorm code and Code Description
 
 ## Inputs
 The required input is an Excel file with the first column titled "Code Value" with a list of RxNorm codes in that column and a second column titled "Code Description" with the name of the medications. 

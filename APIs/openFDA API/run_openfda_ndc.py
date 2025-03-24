@@ -1,14 +1,24 @@
-import requests # pylint: disable=import-error
-import pandas as pd # pylint: disable=import-error
+"""
+This script ingests a CSV file of condition medication keywords and 
+returns and Excel file of NDC codes that are associated with the inputted keywords
+Resources: 
+- [Keywords template](https://docs.google.com/spreadsheets/d/1_RapZeT2gHfZQERkFxnjQZEbvCiMd5hNdy9sqATFvNw/edit?gid=0#gid=0) # pylint: disable=line-too-long
+
+Note: This script removes the "CC" portion of the NDC code (ie. AAAAA-BBBB-CC) 
+for uniformity with VA documentation.
+"""
+
+import requests
+import pandas as pd
 
 ## CHANGE INPUTS HERE ##
 API_KEY = 'YOUR API KEY HERE'
 
 # Output Excel Sheet Name
-CONDITION = 'CONDITION NAME'
+CONDITION = 'Test Heart'
 
 # Input Excel Sheet with Keywords Name
-CSV_FILE_INPUT_NAME = 'CONDITION KEYWORDS FILE NAME'
+CSV_FILE_INPUT_NAME = 'Test Heart Medications'
 
 ## END OF REQUESTED INPUTS ##
 
@@ -51,114 +61,120 @@ df["Keyword"] = string_list
 print(string_list)
 
 
-def query_openFDA(keyword): # pylint: disable=invalid-name, missing-function-docstring
-    # Query for generic_name
-    # Note: Some generics DONT have a brand_name variable
-    url_generic = f"https://api.fda.gov/drug/ndc.json?API_KEY={API_KEY}&search=generic_name:{keyword}&limit=1000" # pylint: disable=line-too-long
-    response = requests.get(url_generic)
+def fetch_openfda_data(url, keyword):
+    """Fetch data from the openFDA API."""
+    try:
+        response = requests.get(url, timeout=10)
+        response.raise_for_status()
+        return response.json()
+    except requests.RequestException as e:
+        print(f'Error fetching data for {keyword}: {e}')
+        return None
 
-    if response.status_code == 200:
-        data = response.json() # pylint: disable=line-too-long
-        meta = data.get("meta")
 
-        if meta:
-            total_results = meta.get("results", {}).get("total", 0)
-            limit = meta.get(
-                "results", {}).get(
-                "limit", 1)  # check this for the limit
+def validate_metadata(meta, keyword):
+    """Validate and display metadata warnings."""
+    if meta:
+        total_results = meta.get("results", {}).get("total", 0)
+        limit = meta.get("results", {}).get("limit", 1)
 
-            if total_results > limit:
-                print(
-                    f'Warning: Total results for {keyword} exceed the specified limit.')
-            else:
-                print(f'Query for generic_name {keyword} successful. \n')
-
-        else:
+        if total_results > limit:
             print(
-                f'Warning: Metadata not found in the response for {keyword}.')
-
-        if data.get("results"):
-            return data["results"]
-
-    else:
-        print(
-            f'generic_name: Failed to fetch data from openFDA API for {keyword}.')
-
-    # If generic_name search fails, try brand_name
-    url_brand = f"https://api.fda.gov/drug/ndc.json?API_KEY={API_KEY}&search=brand_name:{keyword}&limit=1000" # pylint: disable=line-too-long
-    response = requests.get(url_brand)
-
-    if response.status_code == 200:
-        data = response.json() # pylint: disable=line-too-long
-        meta = data.get("meta")
-
-        if meta:
-            total_results = meta.get("results", {}).get("total", 0)
-            limit = meta.get("results", {}).get("limit", 1)
-
-            if total_results > limit:
-                print(
-                    f'Warning: Total results for {keyword} exceed the specified limit.')
-            else:
-                print(f'Query for brand_name {keyword} successful. \n')
-
+                f'Warning: Total results for {keyword} exceed the specified limit.')
         else:
-            print(
-                f'Warning: Metadata not found in the response for {keyword}.')
-
-        if data.get("results"):
-            return data["results"]
+            print(f'Query for {keyword} successful.\n')
     else:
-        print(
-            f'brand_name: Failed to fetch data from openFDA API for {keyword}.')
+        print(f'Warning: Metadata not found in the response for {keyword}.')
+
+
+def query_openFDA(keyword):  # pylint: disable=invalid-name, missing-function-docstring
+    """Query openFDA API by generic_name and brand_name."""
+
+    # Attempt to fetch by generic_name
+    url_generic = f"https://api.fda.gov/drug/ndc.json?api_key={API_KEY}&search=generic_name:{keyword}&limit=1000" # pylint: disable=line-too-long
+    data = fetch_openfda_data(url_generic, keyword)
+
+    if data and data.get("results"):
+        validate_metadata(data.get("meta"), keyword)
+        return data.get("results", [])
+
+    print(
+        f'No results found for generic_name: {keyword}. Trying brand_name...')
+
+    # If generic_name fails, try brand_name
+    url_brand = f"https://api.fda.gov/drug/ndc.json?api_key={API_KEY}&search=brand_name:{keyword}&limit=1000" # pylint: disable=line-too-long
+    data = fetch_openfda_data(url_brand, keyword)
+
+    if data and data.get("results"):
+        validate_metadata(data.get("meta"), keyword)
+        return data.get("results", [])
+
+    print(f'No results found for brand_name: {keyword}.')
+    return []
 
 
 def process_data(results, keyword, original_row):
+    """Process the API results into structured records."""
     records = []
+
     for result in results:
-        generic_name = result.get("generic_name")
-        brand_name = result.get("brand_name")
+        generic_name = result.get("generic_name", "N/A")
+        brand_name = result.get("brand_name", "N/A")
         packaging = result.get("packaging", [])
-        strength = result.get("active_ingredients", [{}])[0].get("strength")
-        marketing_category = result.get("marketing_category")
+        strength = result.get(
+            "active_ingredients", [
+                {}])[0].get(
+            "strength", "N/A")
+        marketing_category = result.get("marketing_category", "N/A")
+
         for package in packaging:
-            package_ndc = package.get("package_ndc")
-            description = package.get("description")
+            package_ndc = package.get("package_ndc", "N/A")
             drug_name_with_dose = (
-                f'{generic_name} ' if generic_name else f'{brand_name} ') + (
-                f'{strength} ' if strength else '')
+                f'{generic_name} ' if generic_name != "N/A" else f'{brand_name} ') + (
+                f'{strength} ' if strength != "N/A" else '')
+
             records.append([
-                package_ndc, drug_name_with_dose,
-                original_row['VASRD Code'],
-                original_row['Data Concept'],
-                original_row['CFR Criteria'],
-                original_row['Code Set'],
+                package_ndc,
+                drug_name_with_dose,
+                original_row.get('VASRD Code', "N/A"),
+                original_row.get('Data Concept', "N/A"),
+                original_row.get('CFR Criteria', "N/A"),
+                original_row.get('Code Set', "N/A"),
                 keyword,
                 marketing_category
             ])
+
     return records
 
 
 def main(df_input):
+    """Main function to query openFDA API and create a results dataframe."""
     records = []
+
     for _, row in df_input.iterrows():
-        keyword = row['Keyword']
+        keyword = row.get('Keyword', '')
+        if not keyword:
+            print("Empty keyword found, skipping...")
+            continue
+
         results = query_openFDA(keyword)
+
         if results:
             records += process_data(results, keyword, row)
         else:
             print(f"No data found for keyword: {keyword}")
 
     df_api_results = pd.DataFrame(records, columns=[
-        "Code", 
-        "Code Description", 
-        "VASRD Code", 
-        "Data Concept", 
-        "CFR Criteria", 
-        "Code Set", 
-        "Keyword", 
+        "Code",
+        "Code Description",
+        "VASRD Code",
+        "Data Concept",
+        "CFR Criteria",
+        "Code Set",
+        "Keyword",
         "MarketingCategory"
     ])
+
     return df_api_results
 
 
@@ -224,32 +240,47 @@ if __name__ == "__main__":
 
     df_processed['Code'] = formatted_ndc_list_3
 
-    # This removes the additional 51655-0856-XX from the end of the NDC code.
-    def remove_suffix(df, column_name):
-        df[column_name] = df[column_name].str.replace(
+    def remove_suffix(df_input, column_name):
+        """This removes the additional 51655-0856-XX from the end of the NDC code"""
+        df_input[column_name] = df_input[column_name].str.replace(
             r'-\d{2}$', '', regex=True)
-        return df
+        return df_input
 
     df_processed = remove_suffix(df_processed, 'Code')
 
-    # Remove duplicate NDC codes
-    # Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and
-    # 'CFR Criteria' by a semicolon if there are multiple entries for the same
-    # keyword
-    NDC_full_grouped = df_processed.groupby('Code').agg({
-        'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
-        'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
-        'CFR Criteria': lambda x: '; '.join(x.astype(str).unique()),
-        'Code Set': 'first',  # Retain 'Code Set' as it doesn't need concatenation
-        'Code Description': 'first',
-        'Keyword': lambda x: '; '.join(x.astype(str).unique()),
-        'MarketingCategory': lambda x: '; '.join(x.astype(str).unique())
-    }).reset_index()
+# Remove duplicate NDC codes
+# Group by 'Keyword' and concatenate 'VASRD Code', 'Data Concept', and
+# 'CFR Criteria' by a semicolon if there are multiple entries for the same
+# keyword
+NDC_full_grouped = df_processed.groupby('Code').agg({
+    'VASRD Code': lambda x: '; '.join(x.astype(str).unique()),
+    'Data Concept': lambda x: '; '.join(x.astype(str).unique()),
+    'CFR Criteria': lambda x: '; '.join(x.astype(str).unique()),
+    'Code Set': 'first',  # Retain 'Code Set' as it doesn't need concatenation
+    'Code Description': 'first',
+    'Keyword': lambda x: '; '.join(x.astype(str).unique()),
+    'MarketingCategory': lambda x: '; '.join(x.astype(str).unique())
+}).reset_index()
 
-    # Save file
-    OUTPATH = 'output/'
-    FILE_NAME = f"{CONDITION}_NDC_codes.xlsx"
-    NDC_full_grouped.to_excel(OUTPATH + FILE_NAME)
+# Reorder the columns to match the desired output order
+desired_order = [
+    "VASRD Code",
+    "CFR Criteria",
+    "Code Set",
+    "Code",
+    "Code Description",
+    "Keyword",
+    "Data Concept",
+    "MarketingCategory"
+]
 
-    # Print a message indicating where the file is saved
-    print(f"Excel file '{FILE_NAME}' saved in the output folder.")
+# Rearrange the dataframe columns
+NDC_full_grouped = NDC_full_grouped[desired_order]
+
+# Save file
+OUTPATH = 'output/'
+FILE_NAME = f"{CONDITION}_NDC_codes.xlsx"
+NDC_full_grouped.to_excel(OUTPATH + FILE_NAME)
+
+# Print a message indicating where the file is saved
+print(f"Excel file '{FILE_NAME}' saved in the output folder.")
