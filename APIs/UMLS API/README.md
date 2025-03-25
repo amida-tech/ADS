@@ -1,5 +1,4 @@
-# UMLS API Folder
-1. Unified Medical Language System (UMLS) medical code python scripts 
+# 1. Unified Medical Language System (UMLS) medical code python scripts 
 
 ## Script Purpose
 These scripts query the UMLS API using a list of keywords and returns medical codes related to the ingested keywords.  These scripts include: 
@@ -32,7 +31,7 @@ Note: Conditions that contain commas in their description(i.e "Esophagus, strict
 ## Warnings/Discrepancies 
 - Read `Python Script Troubleshooting` documentation located in this folder for more information on commonly returned errors and troubleshooting steps. 
 
-2. LOINC backwards medical mapping script
+# 2. LOINC backwards medical mapping script
 
 ## Overview
 The script `loinc_backwards_mapping.py` will ingest a list of LOINC codes and output relational information and data using the UMLS API.
