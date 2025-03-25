@@ -1,0 +1,28 @@
+VASRD Code,Data Concept,Code Set,CFR Criteria,Keyword
+5256,Lab,LOINC,In flexion between 20° and 45°,Knee Flexion 20 degrees
+5256,Lab,LOINC,In flexion between 20° and 45°,Knee Flexion 25 degrees
+5256,Lab,LOINC,In flexion between 20° and 45°,Knee Flexion 30 degrees
+5256,Lab,LOINC,In flexion between 20° and 45°,Knee Flexion 35 degrees
+5256,Lab,LOINC,In flexion between 20° and 45°,Knee Flexion 40 degrees
+5256,Lab,LOINC,In flexion between 20° and 45°,Knee Flexion 45 degrees
+5256,Lab,LOINC,In flexion between 10° and 20,Knee flexion 10 degrees
+5256,Lab,LOINC,In flexion between 10° and 20,Knee flexion 15 degrees
+5256,Lab,LOINC,In flexion between 10° and 20,Knee flexion 20 degrees
+5256,Lab,LOINC,Slight flexion,Knee flexion 0 degrees
+5256,Lab,LOINC,Slight flexion,Knee flexion 5 degrees
+5256,Lab,LOINC,Slight flexion,Knee flexion 10 degrees
+5257,Symptom,ICD-10,Sprain,Knee sprain
+5259,Symptom,ICD-10,Symptomatic semilunar cartilage,meniscus tear
+5262,Diagnosis,ICD-10,Nonunion of tibia and fibula,fibula nonunion
+5262,Procedure,CPT,Malunion of tibia and fibula,tibia malunion
+5263,Diagnosis,ICD-10,Other - Diagnosis,Knee
+5263,Procedure,CPT,Other - Procedure,Knee
+5263,Lab,LOINC,Other - Lab,Knee
+5263,Procedure,CPT,Other - Procedure,Meniscus
+5263,Procedure,CPT,Other - Procedure,Arthroscopy
+5263,Lab,LOINC,Other - Lab,Arthrocentesis and subsequent synovial fluid analysis
+5263,Lab,LOINC,Other - Lab,Knee arthrocentesis 
+5263,Lab,LOINC,Other - Lab,knee subsequent synovial fluid
+5262,Medication,Keyword,Conservative treatments,Ibuprofen
+5262,Medication,Keyword,Conservative treatments,Advil
+5262,Medication,Keyword,Conservative treatments,Motrin
