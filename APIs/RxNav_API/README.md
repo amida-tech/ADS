@@ -4,7 +4,7 @@
 The script `run_epc_from_keyword.py` returns the Established Pharmacologic Class (EPC) of a medication name by ingesting an original file where medication names were identified.
 
 ## Usage
-1) Naviagte inside the `RxNav API` folder & download the `run_epc_from_keyword.py` file. 
+1) Naviagte inside the `RxNav_API` folder & download the `run_epc_from_keyword.py` file. 
 2) Make sure you have an Excel file with the medication keywords located in the `input` folder.  This file will need a column titled "Keyword". 
 3) Update the `INPUT_FILE_NAME` input variable with the name of the input excel file. 
 - Optional: Update the `OUTPUT_FILE_NAME` variable if desired.  Otherwise, the outputted file name will be `drug_epc_results`.
@@ -30,7 +30,7 @@ The output is a structured Excel file titled `drug_epc_results` with two columns
 The script `run_rxnorm_classes.py` processes RxNorm codes from an Excel file and outputs different RxNav relations (ATC1-4, EPC, may_treat, and VA Class) associated with the inputted RxNorm codes. 
 
 ## Usage
-1) Naviagte inside the `RxNav API` folder & download the `run_rxnorm_classes.py` file. 
+1) Naviagte inside the `RxNav_API` folder & download the `run_rxnorm_classes.py` file. 
 2) Make sure you have an Excel file with the first column titled "Code Value" with RxNorm codes and the second column titled "Code Description" with the RxNorm names, located in the `input` folder. 
 3) Update the `INPUT_FILE_NAME` input variable with the name of the input excel file. 
 - Optional: Update the `OUTPUT_FILE_NAME` variable if desired.  Otherwise, the outputted file name will be `drug_epc_results`.

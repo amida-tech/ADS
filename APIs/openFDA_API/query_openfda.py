@@ -87,11 +87,13 @@ def validate_metadata(meta, keyword):
         print(f'Warning: Metadata not found in the response for {keyword}.')
 
 
-def query_openFDA(keyword):  # pylint: disable=invalid-name, missing-function-docstring
+def query_open_fda(keyword):
     """Query openFDA API by generic_name and brand_name."""
 
     # Attempt to fetch by generic_name
-    url_generic = f"https://api.fda.gov/drug/ndc.json?api_key={API_KEY}&search=generic_name:{keyword}&limit=1000" # pylint: disable=line-too-long
+    url_generic_base = "https://api.fda.gov/drug/ndc.json?"
+    url_generic_paramenters = f"api_key={API_KEY}&search=generic_name:{keyword}&limit=1000"
+    url_generic = url_generic_base + url_generic_paramenters
     data = fetch_openfda_data(url_generic, keyword)
 
     if data and data.get("results"):
@@ -102,7 +104,9 @@ def query_openFDA(keyword):  # pylint: disable=invalid-name, missing-function-do
         f'No results found for generic_name: {keyword}. Trying brand_name...')
 
     # If generic_name fails, try brand_name
-    url_brand = f"https://api.fda.gov/drug/ndc.json?api_key={API_KEY}&search=brand_name:{keyword}&limit=1000" # pylint: disable=line-too-long
+    url_brand_base = "https://api.fda.gov/drug/ndc.json?"
+    url_brand_parameters = f"api_key={API_KEY}&search=brand_name:{keyword}&limit=1000"
+    url_brand = url_brand_base + url_brand_parameters
     data = fetch_openfda_data(url_brand, keyword)
 
     if data and data.get("results"):
@@ -157,7 +161,7 @@ def main(df_input):
             print("Empty keyword found, skipping...")
             continue
 
-        results = query_openFDA(keyword)
+        results = query_open_fda(keyword)
 
         if results:
             records += process_data(results, keyword, row)

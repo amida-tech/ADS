@@ -4,10 +4,12 @@ This script queries the openFDA API using a list of keywords and returns NDC cod
 
 ## How to Use:
 1) [Go here to get an openFDA apiKey](https://open.fda.gov/apis/authentication/).
-- Note: The API_KEY confirmation email is commonly blocked by Amida's email firewall.  If you don't receive your API_KEY within a couple minutes of requesting it, either reach out to IT or request an API_KEY with your personal email. 
-2) Put your Condition's keyword CSV file in the `inputs` folder.  This file should follow the [Keyword Template](https://docs.google.com/spreadsheets/d/1_RapZeT2gHfZQERkFxnjQZEbvCiMd5hNdy9sqATFvNw/edit?gid=0#gid=0) structure.
-3) Update the API_KEY, CONDITION, and CSV_FILE_INPUT_NAME variables at the top of the script with the requested information. 
-4) Run the script.  A new file will be generated in the `output` folder with title of the file built on the CONDITION variable + _NDC_codes.
+- Note: The API_KEY confirmation email is commonly blocked by Amida's email firewall.  If you don't receive your API_KEY within a couple minutes of requesting it, either reach out to IT or check your spam folder. 
+2) Navigate inside of the `openFDA_API` folder & download `query_openfda.py` file
+3) Navigate to your condition's keyword file in Google Sheets and downlod the file as a CSV file. This file should follow the [Keyword Template](https://docs.google.com/spreadsheets/d/1_RapZeT2gHfZQERkFxnjQZEbvCiMd5hNdy9sqATFvNw/edit?gid=0#gid=0) structure.
+4) Put your Condition's keyword CSV file in the `inputs` folder.
+5) Update the API_KEY, CONDITION, and CSV_FILE_INPUT_NAME variables at the top of the script with the requested information. 
+6) Run the script.  A new file will be generated in the `output` folder with title of the file built on the CONDITION variable + _NDC_codes.
 
 ## Understanding Results
 - A new Excel file will be created titled based on the CONDITION variable + _NDC_codes suffix.The outputted file will have the following columns: 
@@ -29,4 +31,4 @@ This script queries the openFDA API using a list of keywords and returns NDC cod
 ## Warnings/Discrepancies 
 - The NDC codes returned by this script will be formatting like the following: "AAAAA-BBBB" instead of the typical complete "AAAAA-BBBB-CC" form to meet VA consistency standards. 
 - openFDA has a limited call per keyword of 1000 items returned.  While this limit should not cause an issue with our calls, the possibility is factored into this code.  If you receive a "Warning: Total results for {keyword} exceed the specified limit" message after running this script, please contact me at alyssa.warnock@amida.com or over slack and I will do my best to help troubleshoot this issue. 
-- The API_KEY confirmation email is commonly blocked by Amida's email firewall.  If you don't receive your API_KEY within a couple minutes of requesting it, either reach out to IT or request an API_KEY with your personal email. 
+- The API_KEY confirmation email is commonly blocked by Amida's email firewall.  If you don't receive your API_KEY within a couple minutes of requesting it, either reach out to IT or check your spam folder. 
