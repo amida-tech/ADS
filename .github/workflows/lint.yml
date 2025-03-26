@@ -20,9 +20,8 @@ jobs:
         with:
           python-version: 3.8
 
-      - name: Install project dependencies
+      - name: Install project dependencies(ignore requirements.txt)
         run: |
-          pip install -r requirements.txt
           pip install pylint==3.0.3
 
       - name: Fetch latest main branch
