@@ -20,6 +20,9 @@ jobs:
         with:
           python-version: 3.8
 
+      - name: Add project root to PYTHONPATH
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+        
       - name: Install project dependencies(ignore requirements.txt)
         run: |
           pip install pylint==3.0.3
