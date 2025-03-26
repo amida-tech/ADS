@@ -34,7 +34,7 @@ jobs:
             echo "No Python files changed. Skipping pylint."
             exit 0
           fi
-          pylint_output=$(pylint $changed_files || true)
+          pylint_output=$(pylint --disable=import-error $changed_files || true)
           echo "$pylint_output"
           score=$(echo "$pylint_output" | grep "Your code has been rated at" | awk '{print $7}' | cut -d'/' -f1)
           result=$(echo "$score < 9.5" | bc)
@@ -42,3 +42,4 @@ jobs:
             echo "Pylint score is less than 9.5. Merge blocked."
             exit 1
           fi
+      
