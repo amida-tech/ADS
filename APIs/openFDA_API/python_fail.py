@@ -75,21 +75,6 @@ def validate_metadata(meta, keyword):
         print(f'Warning: Metadata not found in the response for {keyword}.')
 
 
-def query_open_fda(keyword):
-    """Query openFDA API by generic_name and brand_name."""
-
-    # Attempt to fetch by generic_name
-    url_generic_base = "https://api.fda.gov/drug/ndc.json?"
-    url_generic_paramenters = f"api_key={apikey}&search=generic_name:{keyword}&limit=1000"
-    url_generic = url_generic_base + url_generic_paramenters
-    data = fetch_openfda_data(url_generic, keyword)
-
-    if data and data.get("results"):
-        validate_metadata(data.get("meta"), keyword)
-        return data.get("results", [])
-
-    print(
-        f'No results found for generic_name: {keyword}. Trying brand_name...')
 
     # If generic_name fails, try brand_name
     url_brand_base = "https://api.fda.gov/drug/ndc.json?"
