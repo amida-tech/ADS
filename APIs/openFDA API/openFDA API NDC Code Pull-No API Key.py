@@ -1,4 +1,4 @@
-apikey = 'YOUR API KEY HERE'
+apikey = 'FDA API'
 
 #Output Excel Sheet Name
 Condition = "Test Update"
