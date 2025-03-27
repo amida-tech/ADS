@@ -2,7 +2,7 @@ import requests
 import pandas as pd
 
 ## CHANGE INPUTS HERE ##
-API_KEY = 'YOUR API KEY HERE'
+apikey = 'YOUR API KEY HERE'
 
 # Output Excel Sheet Name
 CONDITION = 'Test Heart'
@@ -80,7 +80,7 @@ def query_open_fda(keyword):
 
     # Attempt to fetch by generic_name
     url_generic_base = "https://api.fda.gov/drug/ndc.json?"
-    url_generic_paramenters = f"api_key={API_KEY}&search=generic_name:{keyword}&limit=1000"
+    url_generic_paramenters = f"api_key={apikey}&search=generic_name:{keyword}&limit=1000"
     url_generic = url_generic_base + url_generic_paramenters
     data = fetch_openfda_data(url_generic, keyword)
 
@@ -93,7 +93,7 @@ def query_open_fda(keyword):
 
     # If generic_name fails, try brand_name
     url_brand_base = "https://api.fda.gov/drug/ndc.json?"
-    url_brand_parameters = f"api_key={API_KEY}&search=brand_name:{keyword}&limit=1000"
+    url_brand_parameters = f"api_key={apikey}&search=brand_name:{keyword}&limit=1000"
     url_brand = url_brand_base + url_brand_parameters
     data = fetch_openfda_data(url_brand, keyword)
 
@@ -140,7 +140,6 @@ def process_data(results, keyword, original_row):
 
 
 def main(df_input):
-    """Main function to query openFDA API and create a results dataframe."""
     records = []
 
     for _, row in df_input.iterrows():
@@ -233,7 +232,6 @@ if __name__ == "__main__":
     df_processed['Code'] = formatted_ndc_list_3
 
     def remove_suffix(df_input, column_name):
-        """This removes the additional 51655-0856-XX from the end of the NDC code"""
         df_input[column_name] = df_input[column_name].str.replace(
             r'-\d{2}$', '', regex=True)
         return df_input
