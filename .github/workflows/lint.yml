@@ -1,0 +1,67 @@
+name: Linter
+
+on:
+  pull_request:
+    branches: [ "**" ]
+
+jobs:
+  run-linter:
+    name: Run pylint on changed files
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2  # Just enough to compare PR changes
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.8
+
+      - name: Install pylint
+        run: pip install pylint==3.0.3
+
+      - name: Get list of changed Python files in PR
+        id: get_changed_files
+        run: |
+          echo "Looking for changed .py files..."
+          changed_files=$(git diff --name-only origin/${{ github.base_ref }} -- '*.py')
+          echo "$changed_files"
+
+          # Export to GitHub env for later steps
+          echo "CHANGED_FILES<<EOF" >> $GITHUB_ENV
+          echo "$changed_files" >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Run pylint on changed Python files
+        run: |
+          if [ -z "$CHANGED_FILES" ]; then
+            echo "No Python files changed in this PR. Skipping pylint."
+            exit 0
+          fi
+
+          echo "Linting the following files:"
+          echo "$CHANGED_FILES"
+
+          # Run pylint and extract score
+          pylint_output=$(pylint --disable=import-error $CHANGED_FILES || true)
+          echo "$pylint_output"
+
+          score_line=$(echo "$pylint_output" | grep "Your code has been rated at")
+          if [ -z "$score_line" ]; then
+            echo "::error ::Pylint did not return a score. Merge blocked."
+            exit 1
+          fi
+
+          score=$(echo "$score_line" | awk '{print $7}' | cut -d'/' -f1)
+          echo "::notice title=Pylint Score::Score is $score/10"
+
+          result=$(echo "$score < 9.5" | bc)
+          if [ "$result" -eq 1 ]; then
+            echo "::error ::Pylint score is less than 9.5. Merge blocked."
+            exit 1
+          fi
+
+          echo "✅ Pylint score is $score — you're good to go!"
