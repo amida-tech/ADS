@@ -61,7 +61,6 @@ def fetch_openfda_data(url, keyword):
 
 
 def validate_metadata(meta, keyword):
-    """Validate and display metadata warnings."""
     if meta:
         total_results = meta.get("results", {}).get("total", 0)
         limit = meta.get("results", {}).get("limit", 1)
@@ -75,13 +74,9 @@ def validate_metadata(meta, keyword):
         print(f'Warning: Metadata not found in the response for {keyword}.')
 
 
-def query_open_fda(keyword):
-    """Query openFDA API by generic_name and brand_name."""
-
+def query_open_fda(keyword): 
     # Attempt to fetch by generic_name
-    url_generic_base = "https://api.fda.gov/drug/ndc.json?"
-    url_generic_paramenters = f"api_key={apikey}&search=generic_name:{keyword}&limit=1000"
-    url_generic = url_generic_base + url_generic_paramenters
+    url_generic = "https://api.fda.gov/drug/ndc.json?api_key={apikey}&search=generic_name:{keyword}&limit=1000"
     data = fetch_openfda_data(url_generic, keyword)
 
     if data and data.get("results"):
@@ -231,7 +226,6 @@ if __name__ == "__main__":
     df_processed['Code'] = formatted_ndc_list_3
 
     def remove_suffix(df_input, column_name):
-        """This removes the additional 51655-0856-XX from the end of the NDC code"""
         df_input[column_name] = df_input[column_name].str.replace(
             r'-\d{2}$', '', regex=True)
         return df_input
